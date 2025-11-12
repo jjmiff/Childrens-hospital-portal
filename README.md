@@ -1,4 +1,8 @@
-# Getting Started with Create React App
+# Childrens-hospital-portal
+
+A tablet-first prototype web app for children's hospital patients and families.
+
+## Getting Started with Create React App
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
