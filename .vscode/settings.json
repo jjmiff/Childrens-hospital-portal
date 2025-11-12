@@ -1,0 +1,15 @@
+{
+    // Custom spelling whitelist
+    "cSpell.words": [
+        "Fredoka",
+        "Neue",
+        "skybg",
+        "valuenow"
+    ],
+    // Hides false Tailwind CSS errors (e.g. @tailwind, @apply, theme())
+    "css.lint.unknownAtRules": "ignore",
+    // Helps VS Code suggest Tailwind classes inside quotes
+    "editor.quickSuggestions": {
+        "strings": true
+    }
+}
