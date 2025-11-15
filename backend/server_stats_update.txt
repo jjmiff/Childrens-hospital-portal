@@ -1,0 +1,138 @@
+FIND THIS SECTION (around line 361):
+    const stats = {
+      totalGames: scores.length,
+      quizStats: {
+        count: 0,
+        averageScore: 0,
+        bestScore: 0,
+        recentScores: [],
+      },
+      memoryStats: {
+        count: 0,
+        averageMoves: 0,
+        bestMoves: Infinity,
+        averageTime: 0,
+        bestTime: Infinity,
+        recentGames: [],
+      },
+      scoreHistory: [], // for line chart
+    };
+
+REPLACE WITH:
+    const stats = {
+      totalGames: scores.length,
+      quizStats: {
+        count: 0,
+        averageScore: 0,
+        bestScore: 0,
+        recentScores: [],
+      },
+      memoryStats: {
+        count: 0,
+        averageMoves: 0,
+        bestMoves: Infinity,
+        averageTime: 0,
+        bestTime: Infinity,
+        recentGames: [],
+      },
+      wordScrambleStats: {
+        count: 0,
+        averageScore: 0,
+        bestScore: 0,
+        recentScores: [],
+      },
+      mathChallengeStats: {
+        count: 0,
+        averageScore: 0,
+        bestScore: 0,
+        recentScores: [],
+      },
+      patternMatchStats: {
+        count: 0,
+        averageScore: 0,
+        bestScore: 0,
+        recentScores: [],
+      },
+      scoreHistory: [], // for line chart
+    };
+
+---
+
+FIND THIS SECTION (around line 413):
+        stats.memoryStats.recentGames.push({
+          moves: score.moves,
+          seconds: score.seconds,
+          date: score.date,
+        });
+      }
+
+      // Add to score history for chart
+
+ADD THIS AFTER THE CLOSING } AND BEFORE "// Add to score history":
+      } else if (score.gameType === "word-scramble") {
+        stats.wordScrambleStats.count++;
+        stats.wordScrambleStats.averageScore += percentage;
+        if (percentage > stats.wordScrambleStats.bestScore) {
+          stats.wordScrambleStats.bestScore = percentage;
+        }
+        stats.wordScrambleStats.recentScores.push({
+          score: percentage,
+          date: score.date,
+        });
+      } else if (score.gameType === "math-challenge") {
+        stats.mathChallengeStats.count++;
+        stats.mathChallengeStats.averageScore += percentage;
+        if (percentage > stats.mathChallengeStats.bestScore) {
+          stats.mathChallengeStats.bestScore = percentage;
+        }
+        stats.mathChallengeStats.recentScores.push({
+          score: percentage,
+          date: score.date,
+        });
+      } else if (score.gameType === "pattern-match") {
+        stats.patternMatchStats.count++;
+        stats.patternMatchStats.averageScore += percentage;
+        if (percentage > stats.patternMatchStats.bestScore) {
+          stats.patternMatchStats.bestScore = percentage;
+        }
+        stats.patternMatchStats.recentScores.push({
+          score: percentage,
+          date: score.date,
+        });
+      }
+
+---
+
+FIND THIS SECTION (around line 449):
+      }
+    }
+
+    res.status(200).json(stats);
+
+REPLACE WITH:
+      }
+    }
+
+    // Calculate averages for new games
+    if (stats.wordScrambleStats.count > 0) {
+      stats.wordScrambleStats.averageScore = Math.round(
+        stats.wordScrambleStats.averageScore / stats.wordScrambleStats.count
+      );
+      stats.wordScrambleStats.recentScores = stats.wordScrambleStats.recentScores.slice(-10);
+    }
+
+    if (stats.mathChallengeStats.count > 0) {
+      stats.mathChallengeStats.averageScore = Math.round(
+        stats.mathChallengeStats.averageScore / stats.mathChallengeStats.count
+      );
+      stats.mathChallengeStats.recentScores = stats.mathChallengeStats.recentScores.slice(-10);
+    }
+
+    if (stats.patternMatchStats.count > 0) {
+      stats.patternMatchStats.averageScore = Math.round(
+        stats.patternMatchStats.averageScore / stats.patternMatchStats.count
+      );
+      stats.patternMatchStats.recentScores = stats.patternMatchStats.recentScores.slice(-10);
+    }
+
+    res.status(200).json(stats);

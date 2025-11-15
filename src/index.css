@@ -16,7 +16,7 @@ body,
 }
 
 body {
-  background: #A3D5FF;
+  background: #a3d5ff;
   /* soft blue page bg */
   font-family: "Comic Neue", "Poppins", system-ui, sans-serif;
   color: #333333;
@@ -36,14 +36,14 @@ body {
 }
 
 .btn-primary {
-  background-color: #B2F0E8;
+  background-color: #b2f0e8;
   /* mint */
   color: #111;
   box-shadow: 0 10px 20px rgba(0, 0, 0, 0.08);
 }
 
 .btn-primary:hover {
-  background-color: #9BE5DE;
+  background-color: #9be5de;
 }
 
 .btn-secondary {
@@ -51,7 +51,7 @@ body {
 }
 
 .btn-cta {
-  background-color: #FFE69A;
+  background-color: #ffe69a;
   /* warm yellow */
   color: #111;
   box-shadow: 0 10px 20px rgba(0, 0, 0, 0.08);
@@ -70,45 +70,49 @@ body {
 }
 
 /* ----- Cards & Tiles ----- */
-/* Cards: clean white with mint border (quiz/results use these) */
+/* Cards: clean white with gray border */
 .card {
-  @apply rounded-2xl p-6 md:p-10;
-  background-color: #FFFFFF;
-  border: 2px solid #B2F0E8;
-  /* mint border */
-  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.08);
+  @apply rounded-2xl p-4 sm:p-6 md:p-8;
+  background-color: #ffffff;
+  border: 2px solid #e5e7eb;
+  /* gray-200 border */
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1),
+    0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  /* shadow-lg */
 }
 
-/* Tiles: soft blue base, hover to mint (home/games use these) */
+/* Tiles: colorful cards with hover effects */
 .tile {
-  @apply rounded-2xl p-4 md:p-6 transition-transform;
-  background-color: #A3D5FF;
-  border: 2px solid #B2F0E8;
+  @apply rounded-2xl p-4 sm:p-6 transition-all duration-200;
+  border: 2px solid #e5e7eb;
   color: #333333;
-  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.08);
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1),
+    0 2px 4px -1px rgba(0, 0, 0, 0.06);
 }
 
 .tile:hover {
-  transform: translateY(-3px);
-  background-color: #B2F0E8;
+  transform: translateY(-4px);
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1),
+    0 4px 6px -2px rgba(0, 0, 0, 0.05);
+  /* shadow-xl */
 }
 
 /* Small badge (results page) */
 .badge {
   @apply inline-flex items-center gap-2 rounded-full px-3 py-1 text-sm;
-  background-color: #FFE69A;
+  background-color: #ffe69a;
   color: #333333;
 }
 
 /* ----- Quiz answer base (state colors added in JS) ----- */
 .answer {
   @apply w-full rounded-xl border bg-white text-gray-800 py-3 md:py-3.5 px-4 text-center transition-colors;
-  border-color: #E5E7EB;
+  border-color: #e5e7eb;
   /* gray-200 */
 }
 
 .answer:hover {
-  background-color: #F9FAFB;
+  background-color: #f9fafb;
 }
 
 .answer:disabled {
@@ -122,7 +126,7 @@ body {
 
 .progress-fill {
   @apply h-3 rounded-full transition-all;
-  background: linear-gradient(90deg, #FFE69A 0%, #B2F0E8 60%, #A3D5FF 100%);
+  background: linear-gradient(90deg, #ffe69a 0%, #b2f0e8 60%, #a3d5ff 100%);
 }
 
 /* ----- Entry animation for cards/tiles ----- */
@@ -145,7 +149,7 @@ body {
 
 /* Stronger and more visible focus ring for keyboard users */
 :focus-visible {
-  outline: 3px solid #FFB703;
+  outline: 3px solid #ffb703;
   /* bright warm yellow for contrast */
   outline-offset: 3px;
   border-radius: 12px;
@@ -153,7 +157,6 @@ body {
   /* soft glow */
   transition: box-shadow 0.2s ease;
 }
-
 
 /* Screen-reader utility for skip link */
 .sr-only {
@@ -181,7 +184,11 @@ body {
 /* Full-screen canvas for confetti (sits above UI, but ignores clicks) */
 .confetti-canvas {
   position: fixed;
-  inset: 0;
+  /* Use explicit edges for broader iOS Safari compatibility */
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
   width: 100vw;
   height: 100vh;
   pointer-events: none;
@@ -195,4 +202,49 @@ body {
     display: none !important;
     /* Hide confetti for those sensitive to motion */
   }
+}
+
+/* ----- Memory Game Card Styles ----- */
+.card-container {
+  @apply relative w-20 h-20 cursor-pointer;
+  perspective: 1000px;
+}
+
+.card-inner {
+  @apply relative w-full h-full transition-transform duration-500;
+  transform-style: preserve-3d;
+}
+
+.card-container.flipped .card-inner {
+  transform: rotateY(180deg);
+}
+
+.card-front,
+.card-back {
+  @apply absolute w-full h-full rounded-xl flex items-center justify-center;
+  -webkit-backface-visibility: hidden;
+  backface-visibility: hidden;
+}
+
+.card-front {
+  @apply bg-white border-2 border-mint-200;
+  transform: rotateY(180deg);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.card-back {
+  @apply bg-gradient-to-br from-sky-300 to-mint-200;
+  border: 2px solid #b2f0e8;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+}
+
+.card-back::after {
+  content: "?";
+  @apply text-white text-3xl font-bold;
+}
+
+.card-container:hover .card-back {
+  @apply bg-gradient-to-br from-sky-400 to-mint-300;
+  transform: scale(1.05);
+  transition: all 0.2s ease;
 }
