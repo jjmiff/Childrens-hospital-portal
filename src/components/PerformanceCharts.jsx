@@ -1,4 +1,5 @@
 import React from "react";
+import { useAccessibility } from "../contexts/AccessibilityContext";
 import {
   LineChart,
   Line,
@@ -13,6 +14,30 @@ import {
 } from "recharts";
 
 const PerformanceCharts = ({ stats }) => {
+  const { highContrast } = useAccessibility();
+
+  // High-contrast aware chart theming
+  const hc = highContrast;
+  const axisColor = hc ? "#ffffff" : "#374151"; // white vs gray-700
+  const gridColor = hc ? "#444444" : "#e5e7eb"; // dark gray vs gray-200
+  const labelColor = hc ? "#ffffff" : "#1f2937"; // white vs gray-800
+  const tooltipContentStyle = hc
+    ? { backgroundColor: "#ffffff", borderColor: "#ffffff", color: "#000000" }
+    : {};
+  const tooltipLabelStyle = hc ? { color: "#000000" } : undefined;
+  const tooltipItemStyle = hc ? { color: "#000000" } : undefined;
+  const legendStyle = hc ? { color: "#ffffff" } : undefined;
+
+  // Series colors: pick brighter hues in HC for strong contrast
+  const series = {
+    score: hc ? "#ffa500" : "#3b82f6", // orange vs blue-500
+    memoryMoves: hc ? "#00bfff" : "#8b5cf6", // cyan vs purple-500
+    memoryTime: hc ? "#b2ff59" : "#10b981", // lime vs emerald-500
+    quiz: hc ? "#00e5ff" : "#10b981", // bright cyan vs emerald-500
+    word: hc ? "#ff4dd2" : "#06b6d4", // magenta vs cyan-500
+    math: hc ? "#ffd54f" : "#f97316", // amber vs orange-500
+    pattern: hc ? "#ff6ec7" : "#ec4899", // pink-magenta vs pink-500
+  };
   if (!stats || stats.totalGames === 0) {
     return (
       <div className="bg-white rounded-lg shadow-md p-6 text-center">
@@ -148,18 +173,38 @@ const PerformanceCharts = ({ stats }) => {
           </h3>
           <ResponsiveContainer width="100%" height={300}>
             <LineChart data={scoreTrendData}>
-              <CartesianGrid strokeDasharray="3 3" />
-              <XAxis dataKey="date" />
-              <YAxis domain={[0, 100]} />
-              <Tooltip />
-              <Legend />
+              <CartesianGrid strokeDasharray="3 3" stroke={gridColor} />
+              <XAxis
+                dataKey="date"
+                stroke={axisColor}
+                tick={{ fill: axisColor }}
+              />
+              <YAxis
+                domain={[0, 100]}
+                stroke={axisColor}
+                tick={{ fill: axisColor }}
+              />
+              <Tooltip
+                contentStyle={tooltipContentStyle}
+                labelStyle={tooltipLabelStyle}
+                itemStyle={tooltipItemStyle}
+              />
+              <Legend wrapperStyle={legendStyle} />
               <Line
                 type="monotone"
                 dataKey="score"
-                stroke="#3b82f6"
+                stroke={series.score}
                 strokeWidth={3}
-                dot={{ r: 5 }}
-                activeDot={{ r: 7 }}
+                dot={{
+                  r: 5,
+                  stroke: series.score,
+                  fill: hc ? "#000000" : "#ffffff",
+                }}
+                activeDot={{
+                  r: 7,
+                  stroke: series.score,
+                  fill: hc ? "#000000" : "#ffffff",
+                }}
                 name="Score %"
               />
             </LineChart>
@@ -175,17 +220,40 @@ const PerformanceCharts = ({ stats }) => {
           </h3>
           <ResponsiveContainer width="100%" height={300}>
             <BarChart data={memoryTrendData}>
-              <CartesianGrid strokeDasharray="3 3" />
-              <XAxis dataKey="date" />
-              <YAxis yAxisId="left" orientation="left" stroke="#8b5cf6" />
-              <YAxis yAxisId="right" orientation="right" stroke="#10b981" />
-              <Tooltip />
-              <Legend />
-              <Bar yAxisId="left" dataKey="moves" fill="#8b5cf6" name="Moves" />
+              <CartesianGrid strokeDasharray="3 3" stroke={gridColor} />
+              <XAxis
+                dataKey="date"
+                stroke={axisColor}
+                tick={{ fill: axisColor }}
+              />
+              <YAxis
+                yAxisId="left"
+                orientation="left"
+                stroke={axisColor}
+                tick={{ fill: axisColor }}
+              />
+              <YAxis
+                yAxisId="right"
+                orientation="right"
+                stroke={axisColor}
+                tick={{ fill: axisColor }}
+              />
+              <Tooltip
+                contentStyle={tooltipContentStyle}
+                labelStyle={tooltipLabelStyle}
+                itemStyle={tooltipItemStyle}
+              />
+              <Legend wrapperStyle={legendStyle} />
+              <Bar
+                yAxisId="left"
+                dataKey="moves"
+                fill={series.memoryMoves}
+                name="Moves"
+              />
               <Bar
                 yAxisId="right"
                 dataKey="time"
-                fill="#10b981"
+                fill={series.memoryTime}
                 name="Time (s)"
               />
             </BarChart>
@@ -201,18 +269,38 @@ const PerformanceCharts = ({ stats }) => {
           </h3>
           <ResponsiveContainer width="100%" height={300}>
             <LineChart data={quizTrendData}>
-              <CartesianGrid strokeDasharray="3 3" />
-              <XAxis dataKey="date" />
-              <YAxis domain={[0, 100]} />
-              <Tooltip />
-              <Legend />
+              <CartesianGrid strokeDasharray="3 3" stroke={gridColor} />
+              <XAxis
+                dataKey="date"
+                stroke={axisColor}
+                tick={{ fill: axisColor }}
+              />
+              <YAxis
+                domain={[0, 100]}
+                stroke={axisColor}
+                tick={{ fill: axisColor }}
+              />
+              <Tooltip
+                contentStyle={tooltipContentStyle}
+                labelStyle={tooltipLabelStyle}
+                itemStyle={tooltipItemStyle}
+              />
+              <Legend wrapperStyle={legendStyle} />
               <Line
                 type="monotone"
                 dataKey="score"
-                stroke="#10b981"
+                stroke={series.quiz}
                 strokeWidth={3}
-                dot={{ r: 5 }}
-                activeDot={{ r: 7 }}
+                dot={{
+                  r: 5,
+                  stroke: series.quiz,
+                  fill: hc ? "#000000" : "#ffffff",
+                }}
+                activeDot={{
+                  r: 7,
+                  stroke: series.quiz,
+                  fill: hc ? "#000000" : "#ffffff",
+                }}
                 name="Score %"
               />
             </LineChart>
@@ -228,18 +316,38 @@ const PerformanceCharts = ({ stats }) => {
           </h3>
           <ResponsiveContainer width="100%" height={300}>
             <LineChart data={wordScrambleTrendData}>
-              <CartesianGrid strokeDasharray="3 3" />
-              <XAxis dataKey="date" />
-              <YAxis domain={[0, 100]} />
-              <Tooltip />
-              <Legend />
+              <CartesianGrid strokeDasharray="3 3" stroke={gridColor} />
+              <XAxis
+                dataKey="date"
+                stroke={axisColor}
+                tick={{ fill: axisColor }}
+              />
+              <YAxis
+                domain={[0, 100]}
+                stroke={axisColor}
+                tick={{ fill: axisColor }}
+              />
+              <Tooltip
+                contentStyle={tooltipContentStyle}
+                labelStyle={tooltipLabelStyle}
+                itemStyle={tooltipItemStyle}
+              />
+              <Legend wrapperStyle={legendStyle} />
               <Line
                 type="monotone"
                 dataKey="score"
-                stroke="#06b6d4"
+                stroke={series.word}
                 strokeWidth={3}
-                dot={{ r: 5 }}
-                activeDot={{ r: 7 }}
+                dot={{
+                  r: 5,
+                  stroke: series.word,
+                  fill: hc ? "#000000" : "#ffffff",
+                }}
+                activeDot={{
+                  r: 7,
+                  stroke: series.word,
+                  fill: hc ? "#000000" : "#ffffff",
+                }}
                 name="Score %"
               />
             </LineChart>
@@ -255,18 +363,38 @@ const PerformanceCharts = ({ stats }) => {
           </h3>
           <ResponsiveContainer width="100%" height={300}>
             <LineChart data={mathChallengeTrendData}>
-              <CartesianGrid strokeDasharray="3 3" />
-              <XAxis dataKey="date" />
-              <YAxis domain={[0, 100]} />
-              <Tooltip />
-              <Legend />
+              <CartesianGrid strokeDasharray="3 3" stroke={gridColor} />
+              <XAxis
+                dataKey="date"
+                stroke={axisColor}
+                tick={{ fill: axisColor }}
+              />
+              <YAxis
+                domain={[0, 100]}
+                stroke={axisColor}
+                tick={{ fill: axisColor }}
+              />
+              <Tooltip
+                contentStyle={tooltipContentStyle}
+                labelStyle={tooltipLabelStyle}
+                itemStyle={tooltipItemStyle}
+              />
+              <Legend wrapperStyle={legendStyle} />
               <Line
                 type="monotone"
                 dataKey="score"
-                stroke="#f97316"
+                stroke={series.math}
                 strokeWidth={3}
-                dot={{ r: 5 }}
-                activeDot={{ r: 7 }}
+                dot={{
+                  r: 5,
+                  stroke: series.math,
+                  fill: hc ? "#000000" : "#ffffff",
+                }}
+                activeDot={{
+                  r: 7,
+                  stroke: series.math,
+                  fill: hc ? "#000000" : "#ffffff",
+                }}
                 name="Score %"
               />
             </LineChart>
@@ -282,18 +410,38 @@ const PerformanceCharts = ({ stats }) => {
           </h3>
           <ResponsiveContainer width="100%" height={300}>
             <LineChart data={patternMatchTrendData}>
-              <CartesianGrid strokeDasharray="3 3" />
-              <XAxis dataKey="date" />
-              <YAxis domain={[0, 100]} />
-              <Tooltip />
-              <Legend />
+              <CartesianGrid strokeDasharray="3 3" stroke={gridColor} />
+              <XAxis
+                dataKey="date"
+                stroke={axisColor}
+                tick={{ fill: axisColor }}
+              />
+              <YAxis
+                domain={[0, 100]}
+                stroke={axisColor}
+                tick={{ fill: axisColor }}
+              />
+              <Tooltip
+                contentStyle={tooltipContentStyle}
+                labelStyle={tooltipLabelStyle}
+                itemStyle={tooltipItemStyle}
+              />
+              <Legend wrapperStyle={legendStyle} />
               <Line
                 type="monotone"
                 dataKey="score"
-                stroke="#ec4899"
+                stroke={series.pattern}
                 strokeWidth={3}
-                dot={{ r: 5 }}
-                activeDot={{ r: 7 }}
+                dot={{
+                  r: 5,
+                  stroke: series.pattern,
+                  fill: hc ? "#000000" : "#ffffff",
+                }}
+                activeDot={{
+                  r: 7,
+                  stroke: series.pattern,
+                  fill: hc ? "#000000" : "#ffffff",
+                }}
                 name="Score %"
               />
             </LineChart>

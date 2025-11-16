@@ -249,6 +249,33 @@ body {
   color: #cccccc !important;
 }
 
+/* Form focus outlines (strong, visible) */
+.high-contrast input:focus,
+.high-contrast textarea:focus,
+.high-contrast select:focus,
+.high-contrast button:focus,
+.high-contrast a:focus {
+  outline: 3px solid #ffa500 !important;
+  outline-offset: 2px !important;
+  box-shadow: 0 0 0 3px #ffa500 !important;
+}
+
+/* Error states readable on black */
+.high-contrast [class*="bg-red-"] {
+  background-color: #000000 !important;
+}
+.high-contrast [class*="text-red-"] {
+  color: #ff5555 !important;
+}
+.high-contrast [class*="border-red-"] {
+  border-color: #ff5555 !important;
+}
+.high-contrast [role="alert"] {
+  background-color: #000000 !important;
+  color: #ff5555 !important;
+  border: 2px solid #ff5555 !important;
+}
+
 /* Buttons - WHITE background with BLACK text (highest priority) */
 .high-contrast button,
 .high-contrast button[class*="bg-"],
@@ -316,6 +343,23 @@ body {
   background-color: #000000 !important;
   background-image: none !important;
   border: 2px solid #ffffff !important;
+}
+
+/* Mobile menu overlay (navigation) */
+.high-contrast nav [role="navigation"] {
+  background-color: #000000 !important;
+  border-color: #ffffff !important;
+}
+.high-contrast nav [role="navigation"] a,
+.high-contrast nav [role="navigation"] button {
+  color: #ffffff !important;
+}
+.high-contrast nav [role="navigation"] a:hover,
+.high-contrast nav [role="navigation"] button:hover,
+.high-contrast nav [role="navigation"] a:focus,
+.high-contrast nav [role="navigation"] button:focus {
+  background-color: #ffa500 !important;
+  color: #000000 !important;
 }
 
 /* Toggle switches - keep knob visible */
