@@ -6,6 +6,8 @@ import { useNavigate } from "react-router-dom";
 import { getAgeGroup } from "../utils/userUtils";
 import { apiFetch } from "../utils/api";
 import AchievementToast from "../components/AchievementToast";
+import AnimatedPage from "../components/AnimatedPage";
+import GameToolbar from "../components/GameToolbar";
 import { sfx } from "../utils/sfx";
 
 const shapes = [
@@ -250,173 +252,245 @@ export default function PatternMatch() {
         setCurrentAchievement(newAchievements[currentIdx + 1]);
       }, 500);
     } else {
+      // Finished the queue; clear to prevent re-triggering the first toast
       setCurrentAchievement(null);
+      setNewAchievements([]);
     }
   };
 
+  // Keyboard shortcuts
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      // Number keys to select pattern options (only if pattern hidden and not complete)
+      if (
+        !isComplete &&
+        !showPattern &&
+        !selectedAnswer &&
+        e.key >= "1" &&
+        e.key <= "9"
+      ) {
+        const optionIndex = parseInt(e.key) - 1;
+        if (gameData.options[optionIndex]) {
+          e.preventDefault();
+          handleAnswer(gameData.options[optionIndex]);
+        }
+      }
+      // Space to restart (with confirmation)
+      if (e.code === "Space" && !e.repeat) {
+        e.preventDefault();
+        if (
+          window.confirm(
+            "Restart Pattern Match? Your current progress will be lost."
+          )
+        ) {
+          restartGame();
+        }
+      }
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [isComplete, showPattern, selectedAnswer, gameData.options]);
+
   return (
-    <div className="min-h-screen bg-gradient-to-br from-purple-100 via-pink-50 to-blue-100 rounded-3xl py-12 px-4">
-      <div className="max-w-3xl mx-auto">
-        <div className="bg-white rounded-2xl p-4 sm:p-6 md:p-8 border-2 border-gray-200 shadow-lg">
-          <h2 className="title mb-4">🧩 Pattern Match</h2>
-          <p className="text-gray-600 mb-6">
-            {showPattern
-              ? "Memorize the pattern!"
-              : "Which shape completes the pattern?"}
-          </p>
+    <AnimatedPage>
+      {/* Live region for screen reader announcements */}
+      <div
+        className="sr-only"
+        role="status"
+        aria-live="polite"
+        aria-atomic="true"
+      >
+        {isComplete
+          ? `Pattern Match complete! Final score: ${score} out of ${totalRounds}.`
+          : showPattern
+          ? `Round ${currentRound} of ${totalRounds}. Memorizing pattern...`
+          : `Round ${currentRound}. Score: ${score}. ${
+              feedback || "Select the next shape in the pattern."
+            }`}
+      </div>
+      <div className="bg-gradient-to-br from-purple-100 via-pink-50 to-blue-100 rounded-3xl py-12 px-4">
+        <div className="max-w-3xl mx-auto">
+          <div className="bg-white rounded-2xl p-4 sm:p-6 md:p-8 border-2 border-gray-200 shadow-lg">
+            <h2 className="title mb-4 text-center">🧩 Pattern Match</h2>
+            <p className="text-gray-700 mb-6 text-center">
+              {showPattern
+                ? "Memorize the pattern!"
+                : "Which shape completes the pattern?"}
+            </p>
 
-          {!isComplete ? (
-            <>
-              {/* Progress */}
-              <div className="mb-6">
-                <div className="flex justify-between text-sm text-gray-600 mb-2">
-                  <span>
-                    Round {currentRound} of {totalRounds}
-                  </span>
-                  <span>
-                    Score: {score}/{totalRounds}
-                  </span>
-                </div>
-                <div className="w-full bg-gray-200 rounded-full h-3">
-                  <div
-                    className="bg-mint-400 h-3 rounded-full transition-all"
-                    style={{ width: `${(currentRound / totalRounds) * 100}%` }}
-                  ></div>
-                </div>
-              </div>
+            {!isComplete && (
+              <GameToolbar
+                onRestart={restartGame}
+                confirmMessage="Restart Pattern Match? Your current progress will be lost."
+              />
+            )}
 
-              {/* Pattern Display */}
-              <div className="bg-gradient-to-br from-indigo-100 to-indigo-200 rounded-xl p-4 sm:p-6 md:p-8 mb-6">
-                {showPattern ? (
-                  <>
-                    <p className="text-sm text-indigo-600 mb-4 text-center">
-                      Memorize this pattern:
-                    </p>
-                    <div className="flex justify-center items-center gap-2 sm:gap-3 flex-wrap">
-                      {gameData.pattern.map((shape, idx) => (
-                        <div
-                          key={idx}
-                          className="text-4xl sm:text-5xl md:text-6xl"
-                        >
-                          {shape}
+            {!isComplete ? (
+              <>
+                {/* Progress */}
+                <div className="mb-6">
+                  <div className="flex justify-center gap-6 text-sm text-gray-700 mb-2">
+                    <span>
+                      Round {currentRound} of {totalRounds}
+                    </span>
+                    <span>
+                      Score: {score}/{totalRounds}
+                    </span>
+                  </div>
+                  <div className="w-full bg-gray-200 rounded-full h-3">
+                    <div
+                      className="bg-mint-400 h-3 rounded-full transition-all"
+                      style={{
+                        width: `${(currentRound / totalRounds) * 100}%`,
+                      }}
+                    ></div>
+                  </div>
+                </div>
+
+                {/* Pattern Display */}
+                <div className="bg-gradient-to-br from-indigo-100 to-indigo-200 rounded-xl p-4 sm:p-6 md:p-8 mb-6">
+                  {showPattern ? (
+                    <>
+                      <p className="text-sm text-indigo-700 mb-4 text-center font-semibold">
+                        Memorize this pattern:
+                      </p>
+                      <div className="flex justify-center items-center gap-2 sm:gap-3 flex-wrap">
+                        {gameData.pattern.map((shape, idx) => (
+                          <div
+                            key={idx}
+                            className="text-4xl sm:text-5xl md:text-6xl"
+                          >
+                            {shape}
+                          </div>
+                        ))}
+                        <div className="text-4xl sm:text-5xl md:text-6xl">
+                          ❓
                         </div>
-                      ))}
-                      <div className="text-4xl sm:text-5xl md:text-6xl">❓</div>
-                    </div>
-                  </>
-                ) : (
-                  <>
-                    <p className="text-sm text-indigo-600 mb-4 text-center">
-                      What comes next?
-                    </p>
-                    <div className="flex justify-center items-center gap-2 sm:gap-3 flex-wrap">
-                      {gameData.pattern.map((shape, idx) => (
-                        <div
-                          key={idx}
-                          className="text-4xl sm:text-5xl md:text-6xl"
-                        >
-                          {shape}
-                        </div>
-                      ))}
-                      <div className="text-4xl sm:text-5xl md:text-6xl">
-                        {selectedAnswer || "❓"}
                       </div>
-                    </div>
-                  </>
-                )}
-              </div>
+                    </>
+                  ) : (
+                    <>
+                      <p className="text-sm text-indigo-700 mb-4 text-center font-semibold">
+                        What comes next?
+                      </p>
+                      <div className="flex justify-center items-center gap-2 sm:gap-3 flex-wrap">
+                        {gameData.pattern.map((shape, idx) => (
+                          <div
+                            key={idx}
+                            className="text-4xl sm:text-5xl md:text-6xl"
+                          >
+                            {shape}
+                          </div>
+                        ))}
+                        <div className="text-4xl sm:text-5xl md:text-6xl">
+                          {selectedAnswer || "❓"}
+                        </div>
+                      </div>
+                    </>
+                  )}
+                </div>
 
-              {/* Feedback */}
-              {feedback && (
-                <div
-                  className={`mb-6 p-4 rounded-lg text-center font-semibold text-lg ${
-                    feedback.includes("✅")
-                      ? "bg-green-100 text-green-800"
-                      : "bg-red-100 text-red-800"
-                  }`}
-                >
-                  {feedback}
-                </div>
-              )}
-
-              {/* Answer Options */}
-              {!showPattern && !selectedAnswer && (
-                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3">
-                  {gameData.options.map((shape, idx) => (
-                    <button
-                      key={idx}
-                      onClick={() => handleAnswer(shape)}
-                      className="aspect-square bg-white border-4 border-gray-300 rounded-xl p-4 sm:p-6 text-4xl sm:text-5xl md:text-6xl hover:border-mint-400 hover:bg-mint-50 transition-all transform hover:scale-105 active:scale-95 flex items-center justify-center"
-                    >
-                      {shape}
-                    </button>
-                  ))}
-                </div>
-              )}
-
-              {showPattern && (
-                <div className="text-center text-gray-500 animate-pulse">
-                  Pattern showing... Get ready!
-                </div>
-              )}
-            </>
-          ) : (
-            <>
-              {/* Results */}
-              <div className="text-center py-8">
-                <div className="text-6xl mb-4">🎉</div>
-                <h3 className="text-3xl font-bold text-gray-900 mb-4">
-                  Game Complete!
-                </h3>
-                <div className="text-2xl font-semibold text-gray-700 mb-2">
-                  Final Score: {score}/{totalRounds}
-                </div>
-                {saveError && (
-                  <div className="mt-2 text-sm text-red-700 bg-red-100 border border-red-200 rounded px-3 py-2 inline-block">
-                    {saveError}
+                {/* Feedback */}
+                {feedback && (
+                  <div
+                    className={`mb-6 p-4 rounded-lg text-center font-semibold text-lg ${
+                      feedback.includes("✅")
+                        ? "bg-green-100 text-green-800"
+                        : "bg-red-100 text-red-800"
+                    }`}
+                  >
+                    {feedback}
                   </div>
                 )}
-                <div className="text-xl text-gray-600 mb-6">
-                  {score === totalRounds
-                    ? "Perfect memory! 🧠✨"
-                    : score >= totalRounds * 0.7
-                    ? "Great pattern recognition! 👏"
-                    : "Keep practicing! 💪"}
-                </div>
 
-                <div className="flex gap-3 justify-center">
-                  <button
-                    onClick={() => {
-                      sfx.play("click");
-                      restartGame();
-                    }}
-                    className="btn btn-primary"
-                  >
-                    Play Again
-                  </button>
-                  <button
-                    onClick={() => {
-                      sfx.play("click");
-                      navigate("/games");
-                    }}
-                    className="btn btn-secondary"
-                  >
-                    Back to Games
-                  </button>
+                {/* Answer Options */}
+                {!showPattern && !selectedAnswer && (
+                  <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3">
+                    {gameData.options.map((shape, idx) => (
+                      <button
+                        key={idx}
+                        onClick={() => handleAnswer(shape)}
+                        className="aspect-square bg-white border-4 border-gray-300 rounded-xl p-4 sm:p-6 text-4xl sm:text-5xl md:text-6xl hover:border-mint-400 hover:bg-mint-50 transition-all transform hover:scale-105 active:scale-95 flex items-center justify-center"
+                      >
+                        {shape}
+                      </button>
+                    ))}
+                  </div>
+                )}
+
+                {showPattern && (
+                  <div className="text-center text-gray-500 animate-pulse">
+                    Pattern showing... Get ready!
+                  </div>
+                )}
+              </>
+            ) : (
+              <>
+                {/* Results */}
+                <div className="text-center py-8">
+                  <div className="text-6xl mb-4">🎉</div>
+                  <h3 className="text-3xl font-bold text-gray-900 mb-4">
+                    Game Complete!
+                  </h3>
+                  <div className="text-2xl font-semibold text-gray-700 mb-2">
+                    Final Score: {score}/{totalRounds}
+                  </div>
+                  {saveError && (
+                    <div className="mt-2 text-sm text-red-700 bg-red-100 border border-red-200 rounded px-3 py-2 inline-block">
+                      {saveError}
+                    </div>
+                  )}
+                  <div className="text-xl text-gray-700 mb-6">
+                    {score === totalRounds
+                      ? "Perfect memory! 🧠✨"
+                      : score >= totalRounds * 0.7
+                      ? "Great pattern recognition! 👏"
+                      : "Keep practicing! 💪"}
+                  </div>
+
+                  <div className="flex flex-wrap gap-3 justify-center">
+                    <button
+                      onClick={() => {
+                        sfx.play("click");
+                        restartGame();
+                      }}
+                      className="btn btn-primary"
+                    >
+                      🔄 Play Again
+                    </button>
+                    <button
+                      onClick={() => {
+                        sfx.play("click");
+                        navigate("/games");
+                      }}
+                      className="btn btn-secondary"
+                    >
+                      🎮 Back to Games
+                    </button>
+                    <button
+                      onClick={() => {
+                        sfx.play("click");
+                        navigate("/");
+                      }}
+                      className="btn bg-sky-200 text-gray-800 hover:bg-sky-300"
+                    >
+                      🏠 Home
+                    </button>
+                  </div>
                 </div>
-              </div>
-            </>
+              </>
+            )}
+          </div>
+
+          {/* Achievement Toast */}
+          {currentAchievement && (
+            <AchievementToast
+              achievement={currentAchievement}
+              onClose={handleCloseAchievement}
+            />
           )}
         </div>
-
-        {/* Achievement Toast */}
-        {currentAchievement && (
-          <AchievementToast
-            achievement={currentAchievement}
-            onClose={handleCloseAchievement}
-          />
-        )}
       </div>
-    </div>
+    </AnimatedPage>
   );
 }

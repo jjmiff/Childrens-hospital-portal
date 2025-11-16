@@ -16,6 +16,8 @@ const MedicineSchema = new mongoose.Schema(
     endDate: { type: Date },
     notes: { type: String, trim: true },
     active: { type: Boolean, default: true },
+    // Audit: who last updated this record
+    updatedBy: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
   },
   { timestamps: true }
 );

@@ -6,6 +6,8 @@ import { useNavigate } from "react-router-dom";
 import { getAgeGroup } from "../utils/userUtils";
 import { apiFetch } from "../utils/api";
 import AchievementToast from "../components/AchievementToast";
+import AnimatedPage from "../components/AnimatedPage";
+import GameToolbar from "../components/GameToolbar";
 import { sfx } from "../utils/sfx";
 
 // Generate math problems based on age with more variety
@@ -220,6 +222,30 @@ export default function MathChallenge() {
     document.title = "Math Challenge — Children's Hospital Portal";
   }, []);
 
+  // Keyboard shortcuts
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      // Enter to submit answer (only if not complete and has answer)
+      if (!isComplete && userAnswer.trim() && e.key === "Enter") {
+        e.preventDefault();
+        checkAnswer();
+      }
+      // Space to restart (with confirmation)
+      if (e.code === "Space" && !e.repeat && !e.target.matches("input")) {
+        e.preventDefault();
+        if (
+          window.confirm(
+            "Restart Math Challenge? Your current progress will be lost."
+          )
+        ) {
+          restartGame();
+        }
+      }
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [isComplete, userAnswer]);
+
   const checkAnswer = () => {
     const correct = parseInt(userAnswer) === currentProblem.answer;
 
@@ -324,145 +350,178 @@ export default function MathChallenge() {
         setCurrentAchievement(newAchievements[currentIdx + 1]);
       }, 500);
     } else {
+      // Finished the queue; clear to prevent re-triggering the first toast
       setCurrentAchievement(null);
+      setNewAchievements([]);
     }
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-purple-100 via-pink-50 to-blue-100 rounded-3xl py-12 px-4">
-      <div className="max-w-2xl mx-auto">
-        <div className="bg-white rounded-2xl p-4 sm:p-6 md:p-8 border-2 border-gray-200 shadow-lg">
-          <h2 className="title mb-4">🔢 Math Challenge</h2>
-          <p className="text-gray-600 mb-6">
-            Solve math problems as fast as you can!
-          </p>
+    <AnimatedPage>
+      {/* Live region for screen reader announcements */}
+      <div
+        className="sr-only"
+        role="status"
+        aria-live="polite"
+        aria-atomic="true"
+      >
+        {isComplete
+          ? `Math Challenge complete! Final score: ${score} out of ${totalProblems}.`
+          : `Problem ${problemCount} of ${totalProblems}. Score: ${score}. ${
+              streak > 0 ? `Streak: ${streak}.` : ""
+            } ${feedback || "Enter your answer."}`}
+      </div>
+      <div className="bg-gradient-to-br from-purple-100 via-pink-50 to-blue-100 rounded-3xl py-12 px-4">
+        <div className="max-w-2xl mx-auto">
+          <div className="bg-white rounded-2xl p-4 sm:p-6 md:p-8 border-2 border-gray-200 shadow-lg">
+            <h2 className="title mb-4 text-center">🔢 Math Challenge</h2>
+            <p className="text-gray-700 mb-6 text-center">
+              Solve math problems as fast as you can!
+            </p>
 
-          {!isComplete ? (
-            <>
-              {/* Progress and Stats */}
-              <div className="grid grid-cols-3 gap-4 mb-6">
-                <div className="bg-blue-50 rounded-lg p-3 text-center">
-                  <div className="text-2xl font-bold text-blue-900">
-                    {problemCount}/{totalProblems}
+            {!isComplete && (
+              <GameToolbar
+                onRestart={restartGame}
+                confirmMessage="Restart Math Challenge? Your current progress will be lost."
+              />
+            )}
+
+            {!isComplete ? (
+              <>
+                {/* Progress and Stats */}
+                <div className="grid grid-cols-3 gap-4 mb-6">
+                  <div className="bg-blue-50 rounded-lg p-3 text-center">
+                    <div className="text-2xl font-bold text-blue-900">
+                      {problemCount}/{totalProblems}
+                    </div>
+                    <div className="text-xs text-blue-700">Problem</div>
                   </div>
-                  <div className="text-xs text-blue-600">Problem</div>
-                </div>
-                <div className="bg-green-50 rounded-lg p-3 text-center">
-                  <div className="text-2xl font-bold text-green-900">
-                    {score}
+                  <div className="bg-green-50 rounded-lg p-3 text-center">
+                    <div className="text-2xl font-bold text-green-900">
+                      {score}
+                    </div>
+                    <div className="text-xs text-green-700">Correct</div>
                   </div>
-                  <div className="text-xs text-green-600">Correct</div>
-                </div>
-                <div className="bg-orange-50 rounded-lg p-3 text-center">
-                  <div className="text-2xl font-bold text-orange-900">
-                    {streak}
+                  <div className="bg-orange-50 rounded-lg p-3 text-center">
+                    <div className="text-2xl font-bold text-orange-900">
+                      {streak}
+                    </div>
+                    <div className="text-xs text-orange-700">Streak</div>
                   </div>
-                  <div className="text-xs text-orange-600">Streak</div>
                 </div>
-              </div>
 
-              {/* Math Problem */}
-              <div className="bg-gradient-to-br from-purple-100 to-purple-200 rounded-xl p-12 mb-6">
-                <div className="text-6xl font-bold text-purple-900 text-center">
-                  {currentProblem.num1} {currentProblem.operation}{" "}
-                  {currentProblem.num2} = ?
+                {/* Math Problem */}
+                <div className="bg-gradient-to-br from-purple-100 to-purple-200 rounded-xl p-12 mb-6">
+                  <div className="text-6xl font-bold text-purple-900 text-center">
+                    {currentProblem.num1} {currentProblem.operation}{" "}
+                    {currentProblem.num2} = ?
+                  </div>
                 </div>
-              </div>
 
-              {/* Answer Input */}
-              <div className="mb-4">
-                <input
-                  type="number"
-                  value={userAnswer}
-                  onChange={(e) => setUserAnswer(e.target.value)}
-                  onKeyPress={(e) => e.key === "Enter" && checkAnswer()}
-                  placeholder="Enter your answer..."
-                  className="w-full px-4 py-3 border-2 border-gray-300 rounded-lg text-lg text-center focus:outline-none focus:ring-2 focus:ring-mint-400"
-                  autoFocus
-                />
-              </div>
-
-              {/* Feedback */}
-              {feedback && (
-                <div
-                  className={`mb-4 p-3 rounded-lg text-center font-semibold ${
-                    feedback.includes("✅")
-                      ? "bg-green-100 text-green-800"
-                      : "bg-red-100 text-red-800"
-                  }`}
-                >
-                  {feedback}
+                {/* Answer Input */}
+                <div className="mb-4">
+                  <input
+                    type="number"
+                    value={userAnswer}
+                    onChange={(e) => setUserAnswer(e.target.value)}
+                    onKeyPress={(e) => e.key === "Enter" && checkAnswer()}
+                    placeholder="Enter your answer..."
+                    className="w-full px-4 py-3 border-2 border-gray-300 rounded-lg text-lg text-center focus:outline-none focus:ring-2 focus:ring-mint-400"
+                    autoFocus
+                  />
                 </div>
-              )}
 
-              {/* Submit Button */}
-              <button
-                onClick={() => {
-                  sfx.play("click");
-                  checkAnswer();
-                }}
-                className="btn btn-primary w-full"
-              >
-                Submit Answer
-              </button>
-            </>
-          ) : (
-            <>
-              {/* Results */}
-              <div className="text-center py-8">
-                <div className="text-6xl mb-4">🎉</div>
-                <h3 className="text-3xl font-bold text-gray-900 mb-4">
-                  Challenge Complete!
-                </h3>
-                <div className="text-2xl font-semibold text-gray-700 mb-2">
-                  Final Score: {score}/{totalProblems}
-                </div>
-                {saveError && (
-                  <div className="mt-2 text-sm text-red-700 bg-red-100 border border-red-200 rounded px-3 py-2 inline-block">
-                    {saveError}
+                {/* Feedback */}
+                {feedback && (
+                  <div
+                    className={`mb-4 p-3 rounded-lg text-center font-semibold ${
+                      feedback.includes("✅")
+                        ? "bg-green-100 text-green-900"
+                        : "bg-red-100 text-red-900"
+                    }`}
+                  >
+                    {feedback}
                   </div>
                 )}
-                <div className="text-xl text-gray-600 mb-6">
-                  {score === totalProblems
-                    ? "Perfect! You're a math wizard! 🧙‍♂️"
-                    : score >= totalProblems * 0.7
-                    ? "Excellent work! 🌟"
-                    : "Good try! Keep practicing! 💪"}
-                </div>
 
-                <div className="flex gap-3 justify-center">
-                  <button
-                    onClick={() => {
-                      sfx.play("click");
-                      restartGame();
-                    }}
-                    className="btn btn-primary"
-                  >
-                    Play Again
-                  </button>
-                  <button
-                    onClick={() => {
-                      sfx.play("click");
-                      navigate("/games");
-                    }}
-                    className="btn btn-secondary"
-                  >
-                    Back to Games
-                  </button>
+                {/* Submit Button */}
+                <button
+                  onClick={() => {
+                    sfx.play("click");
+                    checkAnswer();
+                  }}
+                  className="btn btn-primary w-full"
+                >
+                  Submit Answer
+                </button>
+              </>
+            ) : (
+              <>
+                {/* Results */}
+                <div className="text-center py-8">
+                  <div className="text-6xl mb-4">🎉</div>
+                  <h3 className="text-3xl font-bold text-gray-900 mb-4">
+                    Challenge Complete!
+                  </h3>
+                  <div className="text-2xl font-semibold text-gray-700 mb-2">
+                    Final Score: {score}/{totalProblems}
+                  </div>
+                  {saveError && (
+                    <div className="mt-2 text-sm text-red-700 bg-red-100 border border-red-200 rounded px-3 py-2 inline-block">
+                      {saveError}
+                    </div>
+                  )}
+                  <div className="text-xl text-gray-700 mb-6">
+                    {score === totalProblems
+                      ? "Perfect! You're a math wizard! 🧙‍♂️"
+                      : score >= totalProblems * 0.7
+                      ? "Excellent work! 🌟"
+                      : "Good try! Keep practicing! 💪"}
+                  </div>
+
+                  <div className="flex flex-wrap gap-3 justify-center">
+                    <button
+                      onClick={() => {
+                        sfx.play("click");
+                        restartGame();
+                      }}
+                      className="btn btn-primary"
+                    >
+                      🔄 Play Again
+                    </button>
+                    <button
+                      onClick={() => {
+                        sfx.play("click");
+                        navigate("/games");
+                      }}
+                      className="btn btn-secondary"
+                    >
+                      🎮 Back to Games
+                    </button>
+                    <button
+                      onClick={() => {
+                        sfx.play("click");
+                        navigate("/");
+                      }}
+                      className="btn bg-sky-200 text-gray-800 hover:bg-sky-300"
+                    >
+                      🏠 Home
+                    </button>
+                  </div>
                 </div>
-              </div>
-            </>
+              </>
+            )}
+          </div>
+
+          {/* Achievement Toast */}
+          {currentAchievement && (
+            <AchievementToast
+              achievement={currentAchievement}
+              onClose={handleCloseAchievement}
+            />
           )}
         </div>
-
-        {/* Achievement Toast */}
-        {currentAchievement && (
-          <AchievementToast
-            achievement={currentAchievement}
-            onClose={handleCloseAchievement}
-          />
-        )}
       </div>
-    </div>
+    </AnimatedPage>
   );
 }

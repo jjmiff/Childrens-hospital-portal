@@ -8,6 +8,7 @@ import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useEffect, useRef, useState } from "react";
 import ConfettiLayer from "../components/ConfettiLayer";
 import AchievementToast from "../components/AchievementToast";
+import AnimatedPage from "../components/AnimatedPage";
 
 export default function Results() {
   const loc = useLocation();
@@ -116,61 +117,71 @@ export default function Results() {
   const playAgain = () => navigate("/quiz", { state: { restart: true } });
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-purple-100 via-pink-50 to-blue-100 rounded-3xl py-12 px-4">
-      <div className="max-w-3xl mx-auto">
-        {/* Confetti canvas floats above the whole page */}
-        <ConfettiLayer ref={confettiRef} />
+    <AnimatedPage>
+      <div className="bg-gradient-to-br from-purple-100 via-pink-50 to-blue-100 rounded-3xl py-12 px-4">
+        <div className="max-w-3xl mx-auto">
+          {/* Confetti canvas floats above the whole page */}
+          <ConfettiLayer ref={confettiRef} />
 
-        <div className="bg-white rounded-2xl p-4 sm:p-6 md:p-8 border-2 border-gray-200 shadow-lg text-center">
-          <div className="text-4xl sm:text-5xl md:text-6xl mb-4">🎉</div>
-          <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold text-gray-800 mb-4 sm:mb-6">
-            Quiz Results
-          </h1>
+          <div className="bg-white rounded-2xl p-4 sm:p-6 md:p-8 border-2 border-gray-200 shadow-lg text-center">
+            <div className="text-4xl sm:text-5xl md:text-6xl mb-4">🎉</div>
+            <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold text-gray-800 mb-4 sm:mb-6">
+              Quiz Results
+            </h1>
 
-          <div className="text-xl font-semibold text-gray-900 mb-2">
-            You scored <span className="font-bold">{score}</span> out of{" "}
-            <span className="font-bold">{total}</span>
-          </div>
+            <div className="text-xl font-semibold text-gray-900 mb-2">
+              You scored <span className="font-bold">{score}</span> out of{" "}
+              <span className="font-bold">{total}</span>
+            </div>
 
-          {/* We render the animated % here */}
-          <div
-            className="text-6xl md:text-7xl font-extrabold text-gray-900 my-4"
-            aria-live="polite"
-          >
-            {displayPct}%
-          </div>
-
-          <div className="bg-yellow-100 border-2 border-yellow-300 rounded-xl p-6 mb-6">
-            <p className="text-lg text-gray-700 font-semibold">{message}</p>
-          </div>
-
-          <div className="flex flex-col sm:flex-row items-center gap-3 justify-center">
-            <button
-              onClick={playAgain}
-              className="btn btn-primary w-full sm:w-auto"
-              aria-label="Play the quiz again"
+            {/* We render the animated % here */}
+            <div
+              className="text-6xl md:text-7xl font-extrabold text-gray-900 my-4"
+              aria-live="polite"
             >
-              Play Again
-            </button>
+              {displayPct}%
+            </div>
 
-            <Link
-              to="/"
-              className="inline-block bg-sky-200 text-gray-800 px-8 py-3 rounded-xl font-semibold hover:bg-sky-300 transition-colors shadow-md w-full sm:w-auto text-center"
-              aria-label="Back to Home"
-            >
-              ← Back to Home
-            </Link>
+            <div className="bg-yellow-100 border-2 border-yellow-300 rounded-xl p-6 mb-6">
+              <p className="text-lg text-gray-700 font-semibold">{message}</p>
+            </div>
+
+            <div className="flex flex-col sm:flex-row items-center gap-3 justify-center">
+              <button
+                onClick={playAgain}
+                className="btn btn-primary w-full sm:w-auto"
+                aria-label="Play the quiz again"
+              >
+                🔄 Play Again
+              </button>
+
+              <Link
+                to="/games"
+                className="btn btn-secondary w-full sm:w-auto text-center"
+                aria-label="Back to Games"
+              >
+                🎮 Back to Games
+              </Link>
+
+              <Link
+                to="/"
+                className="inline-block bg-sky-200 text-gray-800 px-8 py-3 rounded-xl font-semibold hover:bg-sky-300 transition-colors shadow-md w-full sm:w-auto text-center"
+                aria-label="Back to Home"
+              >
+                🏠 Home
+              </Link>
+            </div>
           </div>
+
+          {/* Achievement Toast */}
+          {currentAchievement && (
+            <AchievementToast
+              achievement={currentAchievement}
+              onClose={handleCloseAchievement}
+            />
+          )}
         </div>
-
-        {/* Achievement Toast */}
-        {currentAchievement && (
-          <AchievementToast
-            achievement={currentAchievement}
-            onClose={handleCloseAchievement}
-          />
-        )}
       </div>
-    </div>
+    </AnimatedPage>
   );
 }

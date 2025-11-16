@@ -1,7 +1,7 @@
 // components/Navigation.jsx
 // Purpose: Main navigation header with user info and logout
 
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { getUserFromStorage, logout } from "../utils/userUtils";
 
@@ -9,6 +9,7 @@ export default function Navigation() {
   const user = getUserFromStorage();
   const navigate = useNavigate();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const mobileMenuRef = useRef(null);
 
   const handleLogout = () => {
     logout();
@@ -18,6 +19,26 @@ export default function Navigation() {
   const closeMobileMenu = () => {
     setIsMobileMenuOpen(false);
   };
+
+  // Close mobile menu on ESC key
+  useEffect(() => {
+    const handleEscape = (e) => {
+      if (e.key === "Escape" && isMobileMenuOpen) {
+        closeMobileMenu();
+      }
+    };
+
+    if (isMobileMenuOpen) {
+      document.addEventListener("keydown", handleEscape);
+      // Focus first link when menu opens
+      const firstLink = mobileMenuRef.current?.querySelector("a, button");
+      firstLink?.focus();
+    }
+
+    return () => {
+      document.removeEventListener("keydown", handleEscape);
+    };
+  }, [isMobileMenuOpen]);
 
   return (
     <nav className="bg-gradient-to-r from-blue-200 to-sky-200 border-b-2 border-blue-300 shadow-md">
@@ -175,7 +196,12 @@ export default function Navigation() {
 
         {/* Mobile Menu */}
         {isMobileMenuOpen && (
-          <div className="lg:hidden mt-4 pb-4 border-t border-blue-300 pt-4">
+          <div
+            ref={mobileMenuRef}
+            className="lg:hidden mt-4 pb-4 border-t border-blue-300 pt-4"
+            role="navigation"
+            aria-label="Mobile navigation menu"
+          >
             <div className="flex flex-col gap-2">
               <Link
                 to="/games"

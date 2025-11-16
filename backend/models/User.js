@@ -10,14 +10,24 @@ const UserSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
+  userType: {
+    type: String,
+    enum: ["child", "parent", "staff"],
+    required: true,
+    default: "child",
+  },
   dateOfBirth: {
     type: Date,
-    required: true,
+    required: function () {
+      return this.userType === "child";
+    },
   },
   ageGroup: {
     type: String,
     enum: ["4-8", "9-14", "15-18"],
-    required: true,
+    required: function () {
+      return this.userType === "child";
+    },
   },
   avatar: {
     type: String,
@@ -30,6 +40,12 @@ const UserSchema = new mongoose.Schema({
   createdAt: {
     type: Date,
     default: Date.now,
+  },
+  passwordResetToken: {
+    type: String,
+  },
+  passwordResetExpires: {
+    type: Date,
   },
   refreshTokens: [
     new mongoose.Schema(

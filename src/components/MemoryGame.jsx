@@ -3,6 +3,8 @@ import { useState, useEffect, useRef } from "react";
 import { getAgeGroup } from "../utils/userUtils";
 import { apiFetch } from "../utils/api";
 import AchievementToast from "./AchievementToast";
+import AnimatedPage from "./AnimatedPage";
+import GameToolbar from "./GameToolbar";
 
 const cardImages = ["🍎", "🍌", "🍓", "🍇", "🍉", "🥝", "🍍", "🍑", "🍒", "🍋"];
 
@@ -51,6 +53,25 @@ export default function MemoryGame() {
     }
     return () => clearInterval(timerRef.current);
   }, [isTimerRunning]);
+
+  // Keyboard shortcuts
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      // Space to restart (with confirmation)
+      if (e.code === "Space" && !e.repeat) {
+        e.preventDefault();
+        if (
+          window.confirm(
+            "Restart Memory Game? Your current progress will be lost."
+          )
+        ) {
+          restartGame();
+        }
+      }
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, []);
 
   useEffect(() => {
     if (flippedCards.length === 2) {
@@ -175,7 +196,9 @@ export default function MemoryGame() {
         setCurrentAchievement(newAchievements[currentIndex + 1]);
       }, 500);
     } else {
+      // Finished the queue; clear to prevent re-triggering the first toast
       setCurrentAchievement(null);
+      setNewAchievements([]);
     }
   };
 
@@ -194,73 +217,90 @@ export default function MemoryGame() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-purple-100 via-pink-50 to-blue-100 rounded-3xl py-12 px-4">
-      <div className="max-w-4xl mx-auto">
-        <div className="bg-white rounded-2xl p-4 sm:p-6 md:p-8 border-2 border-gray-200 shadow-lg">
-          <div className="text-center">
-            <h2 className="text-3xl sm:text-4xl font-bold text-gray-800 mb-4">
-              🎴 Memory Game
-            </h2>
-            {pairCount === 6 && (
-              <p className="text-gray-600 mb-2">Level: Easy (12 cards)</p>
-            )}
-            {pairCount === 8 && (
-              <p className="text-gray-600 mb-2">Level: Medium (16 cards)</p>
-            )}
-            {pairCount === 10 && (
-              <p className="text-gray-600 mb-2">Level: Hard (20 cards)</p>
-            )}
-            <div
-              className="grid gap-4 max-w-md mx-auto"
-              style={{
-                gridTemplateColumns: `repeat(${
-                  pairCount === 10 ? 5 : 4
-                }, minmax(0, 1fr))`,
-              }}
-            >
-              {cards.map((card) => (
-                <div
-                  key={card.id}
-                  className={`card-container ${
-                    card.isFlipped || card.isMatched ? "flipped" : ""
-                  }`}
-                  onClick={() => handleCardClick(card)}
-                >
-                  <div className="card-inner">
-                    <div className="card-front">
-                      <span className="text-4xl">{card.content}</span>
-                    </div>
-                    <div className="card-back"></div>
-                  </div>
-                </div>
-              ))}
-            </div>
-            <div className="mt-4">
-              <p>Moves: {moves}</p>
-              <p>Time: {timer}s</p>
-              {isGameWon && (
-                <div className="mt-4">
-                  <p className="text-2xl font-bold text-green-500">You won!</p>
-                  <button
-                    onClick={restartGame}
-                    className="btn btn-primary mt-2"
+    <AnimatedPage>
+      <div className="bg-gradient-to-br from-purple-100 via-pink-50 to-blue-100 rounded-3xl py-12 px-4">
+        <div className="max-w-4xl mx-auto">
+          <div className="bg-white rounded-2xl p-4 sm:p-6 md:p-8 border-2 border-gray-200 shadow-lg">
+            <div className="text-center">
+              <h2 className="text-3xl sm:text-4xl font-bold text-gray-800 mb-4">
+                🎴 Memory Game
+              </h2>
+              <GameToolbar
+                onRestart={restartGame}
+                className="mb-4"
+                confirmMessage="Restart Memory Game? Your current progress will be lost."
+              />
+              {pairCount === 6 && (
+                <p className="text-gray-700 mb-2">Level: Easy (12 cards)</p>
+              )}
+              {pairCount === 8 && (
+                <p className="text-gray-700 mb-2">Level: Medium (16 cards)</p>
+              )}
+              {pairCount === 10 && (
+                <p className="text-gray-700 mb-2">Level: Hard (20 cards)</p>
+              )}
+              <div
+                className="grid gap-4 max-w-md mx-auto"
+                style={{
+                  gridTemplateColumns: `repeat(${
+                    pairCount === 10 ? 5 : 4
+                  }, minmax(0, 1fr))`,
+                }}
+              >
+                {cards.map((card) => (
+                  <div
+                    key={card.id}
+                    className={`card-container base-memory-card md:w-20 md:h-20 w-16 h-16 ${
+                      card.isFlipped || card.isMatched ? "flipped" : ""
+                    }`}
+                    onClick={() => handleCardClick(card)}
                   >
-                    Play Again
-                  </button>
-                </div>
+                    <div className="card-inner">
+                      <div className="card-front">
+                        <span className="text-4xl">{card.content}</span>
+                      </div>
+                      <div className="card-back"></div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+              <div className="mt-4">
+                <p>Moves: {moves}</p>
+                <p>Time: {timer}s</p>
+                {isGameWon && (
+                  <div className="mt-4">
+                    <p className="text-2xl font-bold text-green-500">
+                      You won!
+                    </p>
+                    <div className="flex flex-wrap gap-3 justify-center mt-4">
+                      <button onClick={restartGame} className="btn btn-primary">
+                        🔄 Play Again
+                      </button>
+                      <a href="/games" className="btn btn-secondary">
+                        🎮 Back to Games
+                      </a>
+                      <a
+                        href="/"
+                        className="btn bg-sky-200 text-gray-800 hover:bg-sky-300"
+                      >
+                        🏠 Home
+                      </a>
+                    </div>
+                  </div>
+                )}
+              </div>
+
+              {/* Achievement Toast */}
+              {currentAchievement && (
+                <AchievementToast
+                  achievement={currentAchievement}
+                  onClose={handleCloseAchievement}
+                />
               )}
             </div>
-
-            {/* Achievement Toast */}
-            {currentAchievement && (
-              <AchievementToast
-                achievement={currentAchievement}
-                onClose={handleCloseAchievement}
-              />
-            )}
           </div>
         </div>
       </div>
-    </div>
+    </AnimatedPage>
   );
 }

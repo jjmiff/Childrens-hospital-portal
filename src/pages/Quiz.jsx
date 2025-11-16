@@ -8,6 +8,8 @@ import { Link, useLocation, useNavigate } from "react-router-dom";
 import ProgressBar from "../components/ProgressBar";
 import { getAgeGroup, getAgeGroupLabel } from "../utils/userUtils";
 import { apiFetch } from "../utils/api";
+import AnimatedPage from "../components/AnimatedPage";
+import GameToolbar from "../components/GameToolbar";
 
 // Age-appropriate question banks
 const QUESTIONS_4_8 = [
@@ -264,6 +266,22 @@ export default function Quiz() {
     }
   }, [location.state]);
 
+  // Manual restart during quiz
+  const restartQuiz = () => {
+    const freshAge = getAgeGroup();
+    const rawQuestions = getQuestionsForAge(freshAge);
+    setQuestions(
+      shuffle(rawQuestions).map((q) => ({
+        ...q,
+        options: shuffle(q.options),
+      }))
+    );
+    setIndex(0);
+    setSelected(null);
+    setAnswered(false);
+    setScore(0);
+  };
+
   const choose = (opt) => {
     if (answered) return;
     setSelected(opt);
@@ -276,6 +294,36 @@ export default function Quiz() {
     }
     setAnswered(true);
   };
+
+  // Keyboard shortcuts
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      // Number keys 1-4 to select options (only if not answered)
+      if (!answered && e.key >= "1" && e.key <= "4") {
+        const optionIndex = parseInt(e.key) - 1;
+        if (q.options[optionIndex]) {
+          e.preventDefault();
+          choose(q.options[optionIndex]);
+        }
+      }
+      // Enter to proceed to next question (only if answered)
+      if (answered && e.key === "Enter") {
+        e.preventDefault();
+        next();
+      }
+      // Space to restart (with confirmation)
+      if (e.code === "Space" && !e.repeat) {
+        e.preventDefault();
+        if (
+          window.confirm("Restart Quiz? Your current progress will be lost.")
+        ) {
+          restartQuiz();
+        }
+      }
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [answered, q.options]);
 
   const next = async () => {
     if (!answered) return;
@@ -321,93 +369,119 @@ export default function Quiz() {
     const isWrong = answered && isSelected && opt !== q.answer;
     const base = "btn w-full border rounded-xl text-lg";
     const idle = "bg-white border-gray-300 hover:bg-gray-50 text-gray-800";
-    const correct = "bg-green-100 border-green-400 text-green-800";
-    const wrong = "bg-rose-100 border-rose-400 text-rose-700";
+    const correct = "bg-green-100 border-green-500 text-green-900";
+    const wrong = "bg-rose-100 border-rose-500 text-rose-800";
     return [base, isCorrect ? correct : isWrong ? wrong : idle].join(" ");
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-purple-100 via-pink-50 to-blue-100 rounded-3xl py-12 px-4">
-      <div className="max-w-3xl mx-auto">
-        {/* Skip link for screen readers */}
-        <a
-          href="#quiz-start"
-          className="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4"
-        >
-          Skip to quiz
-        </a>
+    <AnimatedPage>
+      {/* Live region for screen reader announcements */}
+      <div
+        className="sr-only"
+        role="status"
+        aria-live="polite"
+        aria-atomic="true"
+      >
+        {answered
+          ? `Question ${index + 1} of ${total}. You selected ${selected}. ${
+              selected === q.answer
+                ? "Correct!"
+                : `Incorrect. The correct answer is ${q.answer}.`
+            } Score: ${score} out of ${index + 1}.`
+          : `Question ${index + 1} of ${total}: ${q.question}`}
+      </div>
+      <div className="bg-gradient-to-br from-purple-100 via-pink-50 to-blue-100 rounded-3xl py-12 px-4">
+        <div className="max-w-3xl mx-auto">
+          {/* Skip link for screen readers */}
+          <a
+            href="#quiz-start"
+            className="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4"
+          >
+            Skip to quiz
+          </a>
 
-        <div className="bg-white rounded-2xl p-4 sm:p-6 md:p-8 border-2 border-gray-200 shadow-lg text-center">
-          {/* Heading area */}
-          <div className="text-center">
-            <h2 className="text-3xl sm:text-4xl font-bold text-gray-800 mb-2">
-              🧠 Hospital Quiz
-            </h2>
-            <p className="text-gray-700">{ageLabel}</p>
-          </div>
-
-          {/* Progress */}
-          <div className="max-w-3xl mx-auto">
-            <div className="text-sm text-gray-700 mb-2 text-center">
-              Question {index + 1} of {total}
+          <div className="bg-white rounded-2xl p-4 sm:p-6 md:p-8 border-2 border-gray-200 shadow-lg text-center">
+            {/* Heading area */}
+            <div className="text-center">
+              <h2 className="text-3xl sm:text-4xl font-bold text-gray-800 mb-2">
+                🧠 Hospital Quiz
+              </h2>
+              <p className="text-gray-700">{ageLabel}</p>
             </div>
-            <ProgressBar current={index} total={total} />
-          </div>
 
-          {/* Question card */}
-          <div className="text-center">
-            <h3 className="text-2xl font-semibold mb-6 text-gray-900">
-              {q.question}
-            </h3>
-            <div className="grid gap-4">
-              {q.options.map((opt) => (
+            <GameToolbar
+              onRestart={restartQuiz}
+              confirmMessage="Restart the quiz? Your current progress will be lost."
+            />
+
+            {/* Progress */}
+            <div className="max-w-3xl mx-auto">
+              <div className="text-sm text-gray-700 mb-2 text-center">
+                Question {index + 1} of {total}
+              </div>
+              <ProgressBar current={index} total={total} />
+            </div>
+
+            {/* Question card */}
+            <div className="text-center">
+              <h3 className="text-2xl font-semibold mb-6 text-gray-900">
+                {q.question}
+              </h3>
+              <div className="grid gap-4">
+                {q.options.map((opt, i) => (
+                  <button
+                    key={opt}
+                    onClick={() => choose(opt)}
+                    onKeyDown={(e) => {
+                      // Space/Enter choose the focused option
+                      if ((e.key === "Enter" || e.key === " ") && !answered) {
+                        e.preventDefault();
+                        choose(opt);
+                      }
+                    }}
+                    // We disable all after answering so the state/color is clear
+                    disabled={answered}
+                    aria-pressed={selected === opt}
+                    aria-label={`Answer choice ${i + 1}: ${opt}. Press ${
+                      i + 1
+                    } to select.`}
+                    className={optionClass(opt)}
+                  >
+                    {opt}
+                  </button>
+                ))}
+              </div>
+
+              {/* Navigation */}
+              <div className="mt-8 flex flex-wrap justify-center gap-4">
                 <button
-                  key={opt}
-                  onClick={() => choose(opt)}
-                  onKeyDown={(e) => {
-                    // Space/Enter choose the focused option
-                    if ((e.key === "Enter" || e.key === " ") && !answered) {
-                      e.preventDefault();
-                      choose(opt);
-                    }
-                  }}
-                  // We disable all after answering so the state/color is clear
-                  disabled={answered}
-                  aria-pressed={selected === opt}
-                  aria-label={`Answer choice: ${opt}`}
-                  className={optionClass(opt)}
+                  onClick={next}
+                  disabled={!answered}
+                  aria-label={
+                    index < total - 1 ? "Next question" : "See results"
+                  }
+                  className={
+                    "btn " +
+                    (answered
+                      ? "btn-primary"
+                      : "bg-gray-200 text-gray-500 cursor-not-allowed")
+                  }
                 >
-                  {opt}
+                  {index < total - 1 ? "Next" : "See Results"}
                 </button>
-              ))}
-            </div>
-
-            {/* Navigation */}
-            <div className="mt-8 flex flex-wrap justify-center gap-4">
-              <button
-                onClick={next}
-                disabled={!answered}
-                aria-label={index < total - 1 ? "Next question" : "See results"}
-                className={
-                  "btn " +
-                  (answered
-                    ? "btn-primary"
-                    : "bg-gray-200 text-gray-500 cursor-not-allowed")
-                }
-              >
-                {index < total - 1 ? "Next" : "See Results"}
-              </button>
-              <Link
-                to="/"
-                className="btn btn-secondary"
-                aria-label="Back to Home"
-              >
-                Back to Home
-              </Link>
+                <Link
+                  to="/"
+                  className="btn btn-secondary"
+                  aria-label="Back to Home"
+                >
+                  Back to Home
+                </Link>
+              </div>
             </div>
           </div>
         </div>
       </div>
-    </div>
+    </AnimatedPage>
   );
 }

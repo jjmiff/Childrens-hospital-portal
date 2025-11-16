@@ -6,6 +6,8 @@ import { useNavigate } from "react-router-dom";
 import { getAgeGroup } from "../utils/userUtils";
 import { apiFetch } from "../utils/api";
 import AchievementToast from "../components/AchievementToast";
+import AnimatedPage from "../components/AnimatedPage";
+import GameToolbar from "../components/GameToolbar";
 import { sfx } from "../utils/sfx";
 
 // Scramble a word randomly
@@ -223,172 +225,229 @@ export default function WordScramble() {
         setCurrentAchievement(newAchievements[currentIdx + 1]);
       }, 500);
     } else {
+      // Finished the queue; clear to prevent re-triggering the first toast
       setCurrentAchievement(null);
+      setNewAchievements([]);
     }
   };
 
+  // Keyboard shortcuts
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      // Enter to submit answer (only if not complete and has answer)
+      if (!isComplete && userAnswer.trim() && e.key === "Enter") {
+        e.preventDefault();
+        checkAnswer();
+      }
+      // Space to restart (with confirmation)
+      if (e.code === "Space" && !e.repeat && !e.target.matches("input")) {
+        e.preventDefault();
+        if (
+          window.confirm(
+            "Restart Word Scramble? Your current progress will be lost."
+          )
+        ) {
+          restartGame();
+        }
+      }
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [isComplete, userAnswer]);
+
   return (
-    <div className="min-h-screen bg-gradient-to-br from-purple-100 via-pink-50 to-blue-100 rounded-3xl py-12 px-4">
-      <div className="max-w-2xl mx-auto">
-        <div className="bg-white rounded-2xl p-4 sm:p-6 md:p-8 border-2 border-gray-200 shadow-lg">
-          <h2 className="title mb-4">📝 Word Scramble</h2>
-          <p className="text-gray-600 mb-6">
-            Unscramble the letters to make a word!
-          </p>
+    <AnimatedPage>
+      {/* Live region for screen reader announcements */}
+      <div
+        className="sr-only"
+        role="status"
+        aria-live="polite"
+        aria-atomic="true"
+      >
+        {isComplete
+          ? `Word Scramble complete! Final score: ${score} out of ${totalWords}.`
+          : `Word ${currentIndex + 1} of ${totalWords}. Score: ${score}. ${
+              feedback || "Enter your answer."
+            }`}
+      </div>
+      <div className="bg-gradient-to-br from-purple-100 via-pink-50 to-blue-100 rounded-3xl py-12 px-4">
+        <div className="max-w-2xl mx-auto">
+          <div className="bg-white rounded-2xl p-4 sm:p-6 md:p-8 border-2 border-gray-200 shadow-lg">
+            <h2 className="title mb-4 text-center">📝 Word Scramble</h2>
+            <p className="text-gray-700 mb-6 text-center">
+              Unscramble the letters to make a word!
+            </p>
 
-          {!isComplete ? (
-            <>
-              {/* Progress */}
-              <div className="mb-6">
-                <div className="flex justify-between text-sm text-gray-600 mb-2">
-                  <span>
-                    Word {currentIndex + 1} of {totalWords}
-                  </span>
-                  <span>
-                    Score: {score}/{totalWords}
-                  </span>
+            {!isComplete && (
+              <GameToolbar
+                onRestart={restartGame}
+                confirmMessage="Restart Word Scramble? Your current progress will be lost."
+              />
+            )}
+
+            {!isComplete ? (
+              <>
+                {/* Progress */}
+                <div className="mb-6">
+                  <div className="flex justify-center gap-6 text-sm text-gray-700 mb-2">
+                    <span>
+                      Word {currentIndex + 1} of {totalWords}
+                    </span>
+                    <span>
+                      Score: {score}/{totalWords}
+                    </span>
+                  </div>
+                  <div className="w-full bg-gray-200 rounded-full h-3">
+                    <div
+                      className="bg-mint-400 h-3 rounded-full transition-all"
+                      style={{
+                        width: `${((currentIndex + 1) / totalWords) * 100}%`,
+                      }}
+                    ></div>
+                  </div>
                 </div>
-                <div className="w-full bg-gray-200 rounded-full h-3">
+
+                {/* Scrambled Word */}
+                <div className="bg-gradient-to-br from-blue-100 to-blue-200 rounded-xl p-4 sm:p-6 md:p-8 mb-6">
+                  <p className="text-sm text-gray-700 mb-2">Unscramble this:</p>
+                  <div className="text-3xl sm:text-4xl md:text-5xl font-bold text-blue-900 tracking-wide sm:tracking-wider md:tracking-widest break-all">
+                    {currentWord.scrambled}
+                  </div>
+                </div>
+
+                {/* Hint */}
+                <div className="mb-6">
+                  {!showHint ? (
+                    <button
+                      onClick={() => setShowHint(true)}
+                      className="text-sm text-blue-700 hover:text-blue-900 underline font-semibold"
+                    >
+                      💡 Show Hint
+                    </button>
+                  ) : (
+                    <div className="bg-yellow-50 border-2 border-yellow-200 rounded-lg p-3">
+                      <p className="text-sm text-yellow-900">
+                        <strong>Hint:</strong> {currentWord.hint}
+                      </p>
+                    </div>
+                  )}
+                </div>
+
+                {/* Answer Input */}
+                <div className="mb-4">
+                  <input
+                    type="text"
+                    value={userAnswer}
+                    onChange={(e) => setUserAnswer(e.target.value)}
+                    onKeyPress={(e) => e.key === "Enter" && checkAnswer()}
+                    placeholder="Type your answer..."
+                    className="w-full px-4 py-3 border-2 border-gray-300 rounded-lg text-lg focus:outline-none focus:ring-2 focus:ring-mint-400"
+                    autoFocus
+                  />
+                </div>
+
+                {/* Feedback */}
+                {feedback && (
                   <div
-                    className="bg-mint-400 h-3 rounded-full transition-all"
-                    style={{
-                      width: `${((currentIndex + 1) / totalWords) * 100}%`,
-                    }}
-                  ></div>
-                </div>
-              </div>
-
-              {/* Scrambled Word */}
-              <div className="bg-gradient-to-br from-blue-100 to-blue-200 rounded-xl p-4 sm:p-6 md:p-8 mb-6">
-                <p className="text-sm text-gray-600 mb-2">Unscramble this:</p>
-                <div className="text-3xl sm:text-4xl md:text-5xl font-bold text-blue-900 tracking-wide sm:tracking-wider md:tracking-widest break-all">
-                  {currentWord.scrambled}
-                </div>
-              </div>
-
-              {/* Hint */}
-              <div className="mb-6">
-                {!showHint ? (
-                  <button
-                    onClick={() => setShowHint(true)}
-                    className="text-sm text-blue-600 hover:text-blue-800 underline"
+                    className={`mb-4 p-3 rounded-lg text-center font-semibold ${
+                      feedback.includes("✅")
+                        ? "bg-green-100 text-green-800"
+                        : "bg-red-100 text-red-800"
+                    }`}
                   >
-                    💡 Show Hint
-                  </button>
-                ) : (
-                  <div className="bg-yellow-50 border-2 border-yellow-200 rounded-lg p-3">
-                    <p className="text-sm text-yellow-800">
-                      <strong>Hint:</strong> {currentWord.hint}
-                    </p>
+                    {feedback}
                   </div>
                 )}
-              </div>
 
-              {/* Answer Input */}
-              <div className="mb-4">
-                <input
-                  type="text"
-                  value={userAnswer}
-                  onChange={(e) => setUserAnswer(e.target.value)}
-                  onKeyPress={(e) => e.key === "Enter" && checkAnswer()}
-                  placeholder="Type your answer..."
-                  className="w-full px-4 py-3 border-2 border-gray-300 rounded-lg text-lg focus:outline-none focus:ring-2 focus:ring-mint-400"
-                  autoFocus
-                />
-              </div>
-
-              {/* Feedback */}
-              {feedback && (
-                <div
-                  className={`mb-4 p-3 rounded-lg text-center font-semibold ${
-                    feedback.includes("✅")
-                      ? "bg-green-100 text-green-800"
-                      : "bg-red-100 text-red-800"
-                  }`}
-                >
-                  {feedback}
-                </div>
-              )}
-
-              {/* Buttons */}
-              <div className="flex gap-3">
-                <button
-                  onClick={() => {
-                    sfx.play("click");
-                    checkAnswer();
-                  }}
-                  className="btn btn-primary flex-1"
-                >
-                  Check Answer
-                </button>
-                <button
-                  onClick={() => {
-                    sfx.play("click");
-                    skipWord();
-                  }}
-                  className="btn bg-gray-200 text-gray-700 hover:bg-gray-300"
-                >
-                  Skip
-                </button>
-              </div>
-            </>
-          ) : (
-            <>
-              {/* Results */}
-              <div className="text-center py-8">
-                <div className="text-6xl mb-4">🎉</div>
-                <h3 className="text-3xl font-bold text-gray-900 mb-4">
-                  Game Complete!
-                </h3>
-                <div className="text-2xl font-semibold text-gray-700 mb-2">
-                  Final Score: {score}/{totalWords}
-                </div>
-                {saveError && (
-                  <div className="mt-2 text-sm text-red-700 bg-red-100 border border-red-200 rounded px-3 py-2 inline-block">
-                    {saveError}
-                  </div>
-                )}
-                <div className="text-xl text-gray-600 mb-6">
-                  {score === totalWords
-                    ? "Perfect! You got them all! 🌟"
-                    : score >= totalWords * 0.7
-                    ? "Great job! 👏"
-                    : "Good effort! Keep practicing! 💪"}
-                </div>
-
-                <div className="flex gap-3 justify-center">
+                {/* Buttons */}
+                <div className="flex gap-3">
                   <button
                     onClick={() => {
                       sfx.play("click");
-                      restartGame();
+                      checkAnswer();
                     }}
-                    className="btn btn-primary"
+                    className="btn btn-primary flex-1"
                   >
-                    Play Again
+                    Check Answer
                   </button>
                   <button
                     onClick={() => {
                       sfx.play("click");
-                      navigate("/games");
+                      skipWord();
                     }}
-                    className="btn btn-secondary"
+                    className="btn bg-gray-200 text-gray-700 hover:bg-gray-300"
                   >
-                    Back to Games
+                    Skip
                   </button>
                 </div>
-              </div>
-            </>
+              </>
+            ) : (
+              <>
+                {/* Results */}
+                <div className="text-center py-8">
+                  <div className="text-6xl mb-4">🎉</div>
+                  <h3 className="text-3xl font-bold text-gray-900 mb-4">
+                    Game Complete!
+                  </h3>
+                  <div className="text-2xl font-semibold text-gray-700 mb-2">
+                    Final Score: {score}/{totalWords}
+                  </div>
+                  {saveError && (
+                    <div className="mt-2 text-sm text-red-700 bg-red-100 border border-red-200 rounded px-3 py-2 inline-block">
+                      {saveError}
+                    </div>
+                  )}
+                  <div className="text-xl text-gray-700 mb-6">
+                    {score === totalWords
+                      ? "Perfect! You got them all! 🌟"
+                      : score >= totalWords * 0.7
+                      ? "Great job! 👏"
+                      : "Good effort! Keep practicing! 💪"}
+                  </div>
+
+                  <div className="flex flex-wrap gap-3 justify-center">
+                    <button
+                      onClick={() => {
+                        sfx.play("click");
+                        restartGame();
+                      }}
+                      className="btn btn-primary"
+                    >
+                      🔄 Play Again
+                    </button>
+                    <button
+                      onClick={() => {
+                        sfx.play("click");
+                        navigate("/games");
+                      }}
+                      className="btn btn-secondary"
+                    >
+                      🎮 Back to Games
+                    </button>
+                    <button
+                      onClick={() => {
+                        sfx.play("click");
+                        navigate("/");
+                      }}
+                      className="btn bg-sky-200 text-gray-800 hover:bg-sky-300"
+                    >
+                      🏠 Home
+                    </button>
+                  </div>
+                </div>
+              </>
+            )}
+          </div>
+
+          {/* Achievement Toast */}
+          {currentAchievement && (
+            <AchievementToast
+              achievement={currentAchievement}
+              onClose={handleCloseAchievement}
+            />
           )}
         </div>
-
-        {/* Achievement Toast */}
-        {currentAchievement && (
-          <AchievementToast
-            achievement={currentAchievement}
-            onClose={handleCloseAchievement}
-          />
-        )}
       </div>
-    </div>
+    </AnimatedPage>
   );
 }

@@ -29,10 +29,11 @@ app.use(
   })
 );
 
-// CORS: allow frontend origin (env) or localhost:3000 by default
+// CORS: allow frontend origin (env) or localhost:3000/3001 by default
 const allowedOrigins = [
   process.env.FRONTEND_ORIGIN,
   "http://localhost:3000",
+  "http://localhost:3001",
 ].filter(Boolean);
 app.use(
   cors({
@@ -83,9 +84,40 @@ const adminOnly = async (req, res, next) => {
   }
 };
 
+// Middleware to check medical staff role (or admin)
+const staffOnly = async (req, res, next) => {
+  try {
+    const user = await User.findById(req.user.userId);
+    if (!user || (user.userType !== "staff" && !user.isAdmin)) {
+      return res
+        .status(403)
+        .json({ message: "Access denied. Medical staff only." });
+    }
+    next();
+  } catch (error) {
+    res.status(500).json({ message: "Error verifying staff status" });
+  }
+};
+
 // Example route
 app.get("/", (req, res) => {
   res.send("Welcome to the backend!");
+});
+
+// Lightweight health check (no secrets)
+app.get("/api/health", (req, res) => {
+  const stateMap = ["disconnected", "connected", "connecting", "disconnecting"];
+  res.status(200).json({
+    status: "ok",
+    uptime: process.uptime(),
+    db: {
+      state:
+        stateMap[mongoose.connection.readyState] ||
+        String(mongoose.connection.readyState),
+      name: mongoose.connection.name,
+      host: mongoose.connection.host,
+    },
+  });
 });
 
 // Helper to calculate age from date of birth
@@ -199,12 +231,26 @@ const unlockAchievement = async (userId, achievementId, newAchievements) => {
 // API route for user registration
 app.post("/api/users/register", async (req, res) => {
   try {
-    const { username, password, dateOfBirth } = req.body;
+    const { username, password, dateOfBirth, userType } = req.body;
 
     // Basic validation
-    if (!username || !password || !dateOfBirth) {
+    if (!username || !password || !userType) {
       return res.status(400).json({
-        message: "Username, password, and date of birth are required.",
+        message: "Username, password, and user type are required.",
+      });
+    }
+
+    // Validate userType
+    if (!["child", "parent", "staff"].includes(userType)) {
+      return res.status(400).json({
+        message: "Invalid user type. Must be 'child', 'parent', or 'staff'.",
+      });
+    }
+
+    // For children, date of birth is required
+    if (userType === "child" && !dateOfBirth) {
+      return res.status(400).json({
+        message: "Date of birth is required for child accounts.",
       });
     }
 
@@ -214,14 +260,20 @@ app.post("/api/users/register", async (req, res) => {
         .json({ message: "Password must be at least 6 characters long." });
     }
 
-    // Calculate age and age group
-    const age = calculateAge(dateOfBirth);
-    const ageGroup = getAgeGroupFromAge(age);
+    // Calculate age and age group only for children
+    let age = null;
+    let ageGroup = null;
 
-    if (!ageGroup) {
-      return res.status(400).json({
-        message: "You must be between 4 and 18 years old to register.",
-      });
+    if (userType === "child") {
+      age = calculateAge(dateOfBirth);
+      ageGroup = getAgeGroupFromAge(age);
+
+      if (!ageGroup) {
+        return res.status(400).json({
+          message:
+            "You must be between 4 and 18 years old to register as a child.",
+        });
+      }
     }
 
     // Check if user already exists
@@ -234,12 +286,19 @@ app.post("/api/users/register", async (req, res) => {
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(password, salt);
 
-    const newUser = new User({
+    const userData = {
       username,
       password: hashedPassword,
-      dateOfBirth: new Date(dateOfBirth),
-      ageGroup,
-    });
+      userType,
+    };
+
+    // Only include DOB and ageGroup for children
+    if (userType === "child") {
+      userData.dateOfBirth = new Date(dateOfBirth);
+      userData.ageGroup = ageGroup;
+    }
+
+    const newUser = new User(userData);
     await newUser.save();
 
     res.status(201).json({ message: "User registered successfully" });
@@ -320,6 +379,7 @@ app.post("/api/users/login", async (req, res) => {
       user: {
         id: user._id,
         username: user.username,
+        userType: user.userType,
         ageGroup: user.ageGroup,
         avatar: user.avatar,
         isAdmin: user.isAdmin,
@@ -615,6 +675,7 @@ app.patch("/api/users/profile", protect, async (req, res) => {
       user: {
         id: user._id,
         username: user.username,
+        userType: user.userType,
         dateOfBirth: user.dateOfBirth,
         ageGroup: user.ageGroup,
         avatar: user.avatar,
@@ -723,8 +784,8 @@ app.delete("/api/appointments/:id", protect, async (req, res) => {
 });
 
 // ===== MEDICINE ROUTES =====
-// Create medicine
-app.post("/api/medicines", protect, async (req, res) => {
+// Create medicine (medical staff only)
+app.post("/api/medicines", protect, staffOnly, async (req, res) => {
   try {
     const { name, dosage, frequency, time, startDate, endDate, notes, active } =
       req.body;
@@ -741,6 +802,7 @@ app.post("/api/medicines", protect, async (req, res) => {
       endDate: endDate ? new Date(endDate) : undefined,
       notes,
       active: typeof active === "boolean" ? active : true,
+      updatedBy: req.user.userId,
     });
     res.status(201).json({ message: "Medicine created", medicine: med });
   } catch (error) {
@@ -749,10 +811,11 @@ app.post("/api/medicines", protect, async (req, res) => {
   }
 });
 
-// Get user's medicines
+// Get user's medicines (read-only for all authenticated users)
 app.get("/api/medicines", protect, async (req, res) => {
   try {
     const meds = await Medicine.find({ userId: req.user.userId })
+      .populate("updatedBy", "username userType")
       .sort({ active: -1, name: 1 })
       .limit(200);
     res.status(200).json(meds);
@@ -762,8 +825,8 @@ app.get("/api/medicines", protect, async (req, res) => {
   }
 });
 
-// Update a medicine
-app.patch("/api/medicines/:id", protect, async (req, res) => {
+// Update a medicine (medical staff only)
+app.patch("/api/medicines/:id", protect, staffOnly, async (req, res) => {
   try {
     const { id } = req.params;
     const med = await Medicine.findOne({ _id: id, userId: req.user.userId });
@@ -780,6 +843,7 @@ app.patch("/api/medicines/:id", protect, async (req, res) => {
       med.endDate = endDate ? new Date(endDate) : undefined;
     if (notes !== undefined) med.notes = notes;
     if (active !== undefined) med.active = !!active;
+    med.updatedBy = req.user.userId;
     await med.save();
     res.status(200).json({ message: "Medicine updated", medicine: med });
   } catch (error) {
@@ -788,8 +852,8 @@ app.patch("/api/medicines/:id", protect, async (req, res) => {
   }
 });
 
-// Delete a medicine
-app.delete("/api/medicines/:id", protect, async (req, res) => {
+// Delete a medicine (medical staff only)
+app.delete("/api/medicines/:id", protect, staffOnly, async (req, res) => {
   try {
     const { id } = req.params;
     const med = await Medicine.findOneAndDelete({
@@ -1153,6 +1217,194 @@ app.post("/api/users/refresh", async (req, res) => {
   }
 });
 
+// Forgot password - generate reset token
+app.post("/api/users/forgot-password", async (req, res) => {
+  try {
+    const { username } = req.body;
+
+    if (!username) {
+      return res.status(400).json({ message: "Username is required" });
+    }
+
+    const user = await User.findOne({ username });
+    if (!user) {
+      // Don't reveal if user exists for security
+      return res.status(200).json({
+        message: "If that username exists, a reset code has been generated.",
+      });
+    }
+
+    // Generate 6-digit reset code
+    const resetToken = Math.floor(100000 + Math.random() * 900000).toString();
+    const hashedToken = await bcrypt.hash(resetToken, 10);
+
+    user.passwordResetToken = hashedToken;
+    user.passwordResetExpires = new Date(Date.now() + 15 * 60 * 1000); // 15 minutes
+    await user.save();
+
+    // In production, send this via email
+    // For now, return it (development only!)
+    console.log(`Password reset code for ${username}: ${resetToken}`);
+
+    res.status(200).json({
+      message: "If that username exists, a reset code has been generated.",
+      // TODO: Remove in production - only for development
+      resetToken:
+        process.env.NODE_ENV === "development" ? resetToken : undefined,
+    });
+  } catch (error) {
+    console.error("Error in forgot password:", error);
+    res.status(500).json({ message: "Error processing request" });
+  }
+});
+
+// Reset password with token
+app.post("/api/users/reset-password", async (req, res) => {
+  try {
+    const { username, resetToken, newPassword } = req.body;
+
+    if (!username || !resetToken || !newPassword) {
+      return res.status(400).json({
+        message: "Username, reset code, and new password are required",
+      });
+    }
+
+    if (newPassword.length < 6) {
+      return res
+        .status(400)
+        .json({ message: "Password must be at least 6 characters long" });
+    }
+
+    const user = await User.findOne({ username });
+    if (!user || !user.passwordResetToken || !user.passwordResetExpires) {
+      return res.status(400).json({ message: "Invalid or expired reset code" });
+    }
+
+    // Check if token expired
+    if (new Date() > user.passwordResetExpires) {
+      user.passwordResetToken = undefined;
+      user.passwordResetExpires = undefined;
+      await user.save();
+      return res.status(400).json({ message: "Reset code has expired" });
+    }
+
+    // Verify token
+    const isValidToken = await bcrypt.compare(
+      resetToken,
+      user.passwordResetToken
+    );
+    if (!isValidToken) {
+      return res.status(400).json({ message: "Invalid reset code" });
+    }
+
+    // Hash new password
+    const salt = await bcrypt.genSalt(10);
+    const hashedPassword = await bcrypt.hash(newPassword, salt);
+
+    user.password = hashedPassword;
+    user.passwordResetToken = undefined;
+    user.passwordResetExpires = undefined;
+    // Revoke all refresh tokens for security
+    user.refreshTokens = [];
+    await user.save();
+
+    res
+      .status(200)
+      .json({ message: "Password reset successful. Please login." });
+  } catch (error) {
+    console.error("Error resetting password:", error);
+    res.status(500).json({ message: "Error resetting password" });
+  }
+});
+
+// Change password (for logged-in users)
+app.post("/api/users/change-password", protect, async (req, res) => {
+  try {
+    const { currentPassword, newPassword } = req.body;
+
+    if (!currentPassword || !newPassword) {
+      return res.status(400).json({
+        message: "Current password and new password are required",
+      });
+    }
+
+    if (newPassword.length < 6) {
+      return res
+        .status(400)
+        .json({ message: "New password must be at least 6 characters long" });
+    }
+
+    const user = await User.findById(req.user.userId);
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    // Verify current password
+    const isMatch = await bcrypt.compare(currentPassword, user.password);
+    if (!isMatch) {
+      return res.status(400).json({ message: "Current password is incorrect" });
+    }
+
+    // Hash new password
+    const salt = await bcrypt.genSalt(10);
+    const hashedPassword = await bcrypt.hash(newPassword, salt);
+
+    user.password = hashedPassword;
+    await user.save();
+
+    res.status(200).json({ message: "Password changed successfully" });
+  } catch (error) {
+    console.error("Error changing password:", error);
+    res.status(500).json({ message: "Error changing password" });
+  }
+});
+
+// Admin: Reset user password (no token needed)
+app.post(
+  "/api/admin/reset-user-password/:userId",
+  protect,
+  adminOnly,
+  async (req, res) => {
+    try {
+      const { userId } = req.params;
+      const { newPassword } = req.body;
+
+      if (!newPassword) {
+        return res.status(400).json({ message: "New password is required" });
+      }
+
+      if (newPassword.length < 6) {
+        return res
+          .status(400)
+          .json({ message: "Password must be at least 6 characters long" });
+      }
+
+      const user = await User.findById(userId);
+      if (!user) {
+        return res.status(404).json({ message: "User not found" });
+      }
+
+      // Hash new password
+      const salt = await bcrypt.genSalt(10);
+      const hashedPassword = await bcrypt.hash(newPassword, salt);
+
+      user.password = hashedPassword;
+      user.passwordResetToken = undefined;
+      user.passwordResetExpires = undefined;
+      // Revoke all refresh tokens
+      user.refreshTokens = [];
+      await user.save();
+
+      res.status(200).json({
+        message: `Password reset for user ${user.username}. They can now login.`,
+      });
+    } catch (error) {
+      console.error("Error resetting user password:", error);
+      res.status(500).json({ message: "Error resetting password" });
+    }
+  }
+);
+
 // Logout: revoke current refresh token and clear cookie
 app.post("/api/users/logout", async (req, res) => {
   const token = req.cookies.refreshToken;
@@ -1187,13 +1439,29 @@ app.post("/api/users/logout", async (req, res) => {
 });
 
 // Database connection (MongoDB example)
+const mongoUri = process.env.DATABASE_URL || process.env.MONGODB_URI || "";
+const dbNameFromEnv = process.env.MONGODB_DB || process.env.DB_NAME;
+
+if (!mongoUri) {
+  console.error(
+    "No MongoDB URI set. Define DATABASE_URL or MONGODB_URI in backend/.env"
+  );
+  process.exit(1);
+}
+
+const connectOptions = {};
+if (dbNameFromEnv) {
+  connectOptions.dbName = dbNameFromEnv;
+}
+
 mongoose
-  .connect(process.env.DATABASE_URL)
+  .connect(mongoUri, connectOptions)
   .then(() => {
-    console.log("Connected to MongoDB!");
+    const conn = mongoose.connection;
+    console.log(`Connected to MongoDB host=${conn.host} db=${conn.name}`);
   })
   .catch((err) => {
-    console.error("Database connection error:", err);
+    console.error("Database connection error:", err.message);
     process.exit(1); // Exit process with failure
   });
 

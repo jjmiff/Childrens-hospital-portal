@@ -24,7 +24,9 @@ async function run() {
       console.log("================");
       users.forEach((u) => {
         console.log(
-          `- ${u.username} ${u.isAdmin ? "(ADMIN)" : ""} - Created: ${u.createdAt}`
+          `- ${u.username} ${u.isAdmin ? "(ADMIN)" : ""} - Created: ${
+            u.createdAt
+          }`
         );
       });
       console.log(`\nTotal: ${users.length} user(s)\n`);

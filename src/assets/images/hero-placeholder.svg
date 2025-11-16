@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="400" viewBox="0 0 1200 400" role="img" aria-labelledby="title desc">
+  <title id="title">Hero placeholder</title>
+  <desc id="desc">A simple colorful placeholder banner</desc>
+  <defs>
+    <linearGradient id="g" x1="0" x2="1" y1="0" y2="1">
+      <stop offset="0%" stop-color="#c7d2fe"/>
+      <stop offset="50%" stop-color="#fde68a"/>
+      <stop offset="100%" stop-color="#bfdbfe"/>
+    </linearGradient>
+  </defs>
+  <rect x="0" y="0" width="1200" height="400" fill="url(#g)" />
+  <g fill="#1f2937" font-family="Inter, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif" text-anchor="middle">
+    <text x="600" y="210" font-size="48" font-weight="700">Children's Hospital Portal</text>
+    <text x="600" y="255" font-size="22">Replace this with your own image</text>
+  </g>
+</svg>

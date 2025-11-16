@@ -204,6 +204,191 @@ body {
   }
 }
 
+/* ----- Accessibility Overrides ----- */
+
+/* High Contrast Mode */
+.high-contrast {
+  --color-bg: #000000;
+  --color-text: #ffffff;
+  --color-link: #ffa500;
+  --color-link-hover: #00bfff;
+  --color-border: #ffffff;
+}
+
+/* Override ALL backgrounds to black */
+.high-contrast,
+.high-contrast *,
+.high-contrast [class*="bg-"] {
+  background-color: #000000 !important;
+  background-image: none !important;
+  border-color: #ffffff !important;
+}
+
+/* Override ALL text colors to white by default */
+.high-contrast,
+.high-contrast *,
+.high-contrast [class*="text-"] {
+  color: #ffffff !important;
+}
+
+.high-contrast body {
+  background: #000000 !important;
+}
+
+/* Inputs and form elements */
+.high-contrast input,
+.high-contrast textarea,
+.high-contrast select {
+  background: #000000 !important;
+  color: #ffffff !important;
+  border: 2px solid #ffffff !important;
+}
+
+.high-contrast input::placeholder,
+.high-contrast textarea::placeholder {
+  color: #cccccc !important;
+}
+
+/* Buttons - WHITE background with BLACK text (highest priority) */
+.high-contrast button,
+.high-contrast button[class*="bg-"],
+.high-contrast button[class*="text-"],
+.high-contrast .btn,
+.high-contrast [class*="btn-"],
+.high-contrast a[class*="btn"] {
+  background-color: #ffffff !important;
+  background-image: none !important;
+  color: #000000 !important;
+  border: 2px solid #ffffff !important;
+  font-weight: 700 !important;
+}
+
+/* Button children and nested elements */
+.high-contrast button *,
+.high-contrast button[class*="bg-"] *,
+.high-contrast button[class*="text-"] *,
+.high-contrast .btn *,
+.high-contrast [class*="btn-"] *,
+.high-contrast a[class*="btn"] * {
+  color: #000000 !important;
+  background-color: transparent !important;
+  background-image: none !important;
+}
+
+/* Button hover states */
+.high-contrast button:hover,
+.high-contrast button[class*="bg-"]:hover,
+.high-contrast .btn:hover,
+.high-contrast a[class*="btn"]:hover {
+  background-color: #ffa500 !important;
+  background-image: none !important;
+  color: #000000 !important;
+}
+
+.high-contrast button:hover *,
+.high-contrast .btn:hover *,
+.high-contrast a[class*="btn"]:hover * {
+  color: #000000 !important;
+}
+
+/* Links - ORANGE text */
+.high-contrast a:not([class*="btn"]):not(button) {
+  color: #ffa500 !important;
+  text-decoration: underline !important;
+  font-weight: 600 !important;
+  background: transparent !important;
+}
+
+.high-contrast a:not([class*="btn"]):not(button):hover {
+  color: #00bfff !important;
+}
+
+/* Icons and emoji - keep visible */
+.high-contrast svg,
+.high-contrast img {
+  filter: invert(1) hue-rotate(180deg) !important;
+}
+
+/* Cards and containers */
+.high-contrast .card,
+.high-contrast .tile,
+.high-contrast [class*="rounded"] {
+  background-color: #000000 !important;
+  background-image: none !important;
+  border: 2px solid #ffffff !important;
+}
+
+/* Toggle switches - keep knob visible */
+.high-contrast [role="switch"],
+.high-contrast button[role="switch"] {
+  background-color: #ffffff !important;
+  border: 2px solid #ffffff !important;
+}
+
+.high-contrast [role="switch"] span,
+.high-contrast button[role="switch"] span {
+  background-color: #000000 !important;
+  border: 2px solid #ffffff !important;
+}
+
+.high-contrast [role="switch"]:hover,
+.high-contrast button[role="switch"]:hover {
+  background-color: #ffa500 !important;
+}
+
+/* Hamburger menu and navigation buttons */
+.high-contrast nav button,
+.high-contrast nav button[aria-label*="menu"],
+.high-contrast nav button[aria-label*="Menu"] {
+  background-color: #ffffff !important;
+  color: #000000 !important;
+}
+
+.high-contrast nav button:hover {
+  background-color: #ffa500 !important;
+}
+
+/* SVG icons in buttons - ensure strokes are visible */
+.high-contrast button svg,
+.high-contrast nav button svg {
+  stroke: #000000 !important;
+  fill: none !important;
+}
+
+.high-contrast button:hover svg,
+.high-contrast nav button:hover svg {
+  stroke: #000000 !important;
+}
+
+/* Text Size Scaling */
+html[data-text-size="small"] {
+  font-size: 14px;
+}
+
+html[data-text-size="normal"] {
+  font-size: 16px;
+}
+
+html[data-text-size="large"] {
+  font-size: 18px;
+}
+
+html[data-text-size="xlarge"] {
+  font-size: 20px;
+}
+
+/* Reduced Motion */
+.reduce-motion * {
+  animation-duration: 0.01ms !important;
+  animation-iteration-count: 1 !important;
+  transition-duration: 0.01ms !important;
+  scroll-behavior: auto !important;
+}
+
+.reduce-motion .confetti-canvas {
+  display: none !important;
+}
+
 /* ----- Memory Game Card Styles ----- */
 .card-container {
   @apply relative w-20 h-20 cursor-pointer;

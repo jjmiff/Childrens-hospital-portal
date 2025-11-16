@@ -4,6 +4,7 @@
 
 import { useEffect } from "react";
 import { Link } from "react-router-dom";
+import AnimatedPage from "../components/AnimatedPage";
 
 const faqs = [
   {
@@ -64,58 +65,62 @@ export default function FAQ() {
   }, []);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-purple-100 via-pink-50 to-blue-100 rounded-3xl py-12 px-4">
-      <div className="max-w-4xl mx-auto space-y-6">
-        <div className="bg-white rounded-2xl p-4 sm:p-6 md:p-8 border-2 border-gray-200 shadow-lg text-center">
-          <div className="text-4xl sm:text-5xl md:text-6xl mb-4">❓</div>
-          <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-gray-800 mb-4">
-            Frequently Asked Questions
-          </h2>
-          <p className="text-lg text-gray-600">
-            Common questions about the hospital
-          </p>
-        </div>
-
-        <div className="bg-white rounded-2xl p-4 sm:p-6 md:p-8 border-2 border-gray-200 shadow-lg">
-          <div className="space-y-6">
-            {faqs.map((faq, index) => (
-              <div
-                key={index}
-                className="pb-6 border-b border-gray-200 last:border-0 last:pb-0"
-              >
-                <h3 className="text-xl font-bold text-gray-900 mb-3 flex items-start gap-2">
-                  <span className="text-2xl" aria-hidden="true">
-                    ❓
-                  </span>
-                  <span>{faq.question}</span>
-                </h3>
-                <p className="text-gray-700 leading-relaxed ml-8">
-                  {faq.answer}
-                </p>
-              </div>
-            ))}
+    <AnimatedPage>
+      <div className="bg-gradient-to-br from-purple-100 via-pink-50 to-blue-100 rounded-3xl py-12 px-4">
+        <div className="max-w-4xl mx-auto space-y-6">
+          <div className="bg-white rounded-2xl p-4 sm:p-6 md:p-8 border-2 border-gray-200 shadow-lg text-center">
+            <div className="text-4xl sm:text-5xl md:text-6xl mb-4">❓</div>
+            <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-gray-800 mb-4">
+              Frequently Asked Questions
+            </h2>
+            <p className="text-lg text-gray-600">
+              Common questions about the hospital
+            </p>
           </div>
 
-          <div className="mt-8 pt-6 border-t-2 border-gray-200">
-            <div className="bg-yellow-100 border-2 border-yellow-300 rounded-xl p-6 text-center mb-6">
-              <p className="text-lg text-gray-700">
-                <span className="font-semibold">💬 Still have questions?</span>
-                <br />
-                Ask your nurse, doctor, or a hospital staff member. We're here
-                to help! 💙
-              </p>
+          <div className="bg-white rounded-2xl p-4 sm:p-6 md:p-8 border-2 border-gray-200 shadow-lg">
+            <div className="space-y-6">
+              {faqs.map((faq, index) => (
+                <div
+                  key={index}
+                  className="pb-6 border-b border-gray-200 last:border-0 last:pb-0"
+                >
+                  <h3 className="text-xl font-bold text-gray-900 mb-3 flex items-start gap-2">
+                    <span className="text-2xl" aria-hidden="true">
+                      ❓
+                    </span>
+                    <span>{faq.question}</span>
+                  </h3>
+                  <p className="text-gray-700 leading-relaxed ml-8">
+                    {faq.answer}
+                  </p>
+                </div>
+              ))}
             </div>
-            <div className="text-center">
-              <Link
-                to="/"
-                className="inline-block bg-sky-200 text-gray-800 px-8 py-3 rounded-xl font-semibold hover:bg-sky-300 transition-colors shadow-md"
-              >
-                ← Back to Home
-              </Link>
+
+            <div className="mt-8 pt-6 border-t-2 border-gray-200">
+              <div className="bg-yellow-100 border-2 border-yellow-300 rounded-xl p-6 text-center mb-6">
+                <p className="text-lg text-gray-700">
+                  <span className="font-semibold">
+                    💬 Still have questions?
+                  </span>
+                  <br />
+                  Ask your nurse, doctor, or a hospital staff member. We're here
+                  to help! 💙
+                </p>
+              </div>
+              <div className="text-center">
+                <Link
+                  to="/"
+                  className="inline-block bg-sky-200 text-gray-800 px-8 py-3 rounded-xl font-semibold hover:bg-sky-300 transition-colors shadow-md"
+                >
+                  ← Back to Home
+                </Link>
+              </div>
             </div>
           </div>
         </div>
       </div>
-    </div>
+    </AnimatedPage>
   );
 }
