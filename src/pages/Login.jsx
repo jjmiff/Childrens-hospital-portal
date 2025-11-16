@@ -3,6 +3,7 @@ import { useState } from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import { validateRequired } from "../utils/validation";
 import { setAuthData } from "../utils/auth";
+import { API_BASE } from "../utils/api";
 import AnimatedPage from "../components/AnimatedPage";
 
 export default function Login() {
@@ -39,7 +40,7 @@ export default function Login() {
     setIsLoading(true);
 
     try {
-      const response = await fetch("http://localhost:5000/api/users/login", {
+      const response = await fetch(`${API_BASE}/api/users/login`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         credentials: "include", // Required for httpOnly cookies

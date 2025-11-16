@@ -29,18 +29,35 @@ app.use(
   })
 );
 
-// CORS: allow frontend origin (env) or localhost:3000/3001 by default
+// CORS: allow known frontend origins + any localhost/127.0.0.1 dev ports
 const allowedOrigins = [
   process.env.FRONTEND_ORIGIN,
   "http://localhost:3000",
   "http://localhost:3001",
+  "http://127.0.0.1:3000",
+  "http://127.0.0.1:3001",
 ].filter(Boolean);
+
+const isLocalDevOrigin = (origin) => {
+  try {
+    const url = new URL(origin);
+    return (
+      (url.hostname === "localhost" || url.hostname === "127.0.0.1") &&
+      /^\d+$/.test(url.port)
+    );
+  } catch (e) {
+    return false;
+  }
+};
+
 app.use(
   cors({
     origin: (origin, callback) => {
       // allow non-browser requests or same-origin
       if (!origin) return callback(null, true);
-      if (allowedOrigins.includes(origin)) return callback(null, true);
+      if (allowedOrigins.includes(origin) || isLocalDevOrigin(origin)) {
+        return callback(null, true);
+      }
       return callback(new Error("Not allowed by CORS"));
     },
     methods: ["GET", "POST", "PATCH", "DELETE"],

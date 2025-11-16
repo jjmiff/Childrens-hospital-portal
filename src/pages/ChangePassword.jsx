@@ -3,6 +3,7 @@ import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { getToken } from "../utils/auth";
 import AnimatedPage from "../components/AnimatedPage";
+import { API_BASE } from "../utils/api";
 
 export default function ChangePassword() {
   const [currentPassword, setCurrentPassword] = useState("");
@@ -43,17 +44,14 @@ export default function ChangePassword() {
 
     try {
       const token = getToken();
-      const response = await fetch(
-        "http://localhost:5000/api/users/change-password",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-          },
-          body: JSON.stringify({ currentPassword, newPassword }),
-        }
-      );
+      const response = await fetch(`${API_BASE}/api/users/change-password`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ currentPassword, newPassword }),
+      });
 
       const data = await response.json();
 

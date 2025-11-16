@@ -2,6 +2,7 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import AnimatedPage from "../components/AnimatedPage";
+import { API_BASE } from "../utils/api";
 
 export default function ResetPassword() {
   const [username, setUsername] = useState("");
@@ -37,14 +38,11 @@ export default function ResetPassword() {
     setIsLoading(true);
 
     try {
-      const response = await fetch(
-        "http://localhost:5000/api/users/reset-password",
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ username, resetToken, newPassword }),
-        }
-      );
+      const response = await fetch(`${API_BASE}/api/users/reset-password`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ username, resetToken, newPassword }),
+      });
 
       const data = await response.json();
 

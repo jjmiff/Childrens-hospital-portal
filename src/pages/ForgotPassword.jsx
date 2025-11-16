@@ -2,6 +2,7 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import AnimatedPage from "../components/AnimatedPage";
+import { API_BASE } from "../utils/api";
 
 export default function ForgotPassword() {
   const [username, setUsername] = useState("");
@@ -24,14 +25,11 @@ export default function ForgotPassword() {
     setIsLoading(true);
 
     try {
-      const response = await fetch(
-        "http://localhost:5000/api/users/forgot-password",
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ username }),
-        }
-      );
+      const response = await fetch(`${API_BASE}/api/users/forgot-password`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ username }),
+      });
 
       const data = await response.json();
 

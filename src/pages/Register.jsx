@@ -7,6 +7,7 @@ import {
   validateDate,
 } from "../utils/validation";
 import AnimatedPage from "../components/AnimatedPage";
+import { API_BASE } from "../utils/api";
 
 export default function Register() {
   const [username, setUsername] = useState("");
@@ -69,7 +70,7 @@ export default function Register() {
         payload.dateOfBirth = dateOfBirth;
       }
 
-      const response = await fetch("http://localhost:5000/api/users/register", {
+      const response = await fetch(`${API_BASE}/api/users/register`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),
