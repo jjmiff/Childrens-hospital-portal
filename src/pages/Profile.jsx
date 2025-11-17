@@ -11,6 +11,7 @@ import AchievementsTab from "../components/profile/AchievementsTab";
 import AvatarEditModal from "../components/profile/AvatarEditModal";
 import { useAuth } from "../hooks/useAuth";
 import AnimatedPage from "../components/AnimatedPage";
+import ResponsiveImage from "../components/ResponsiveImage";
 
 export default function Profile() {
   const { user: authUser, logout, updateUser: updateAuthUser } = useAuth();
@@ -147,6 +148,12 @@ export default function Profile() {
     <AnimatedPage>
       <div className="bg-gradient-to-br from-purple-100 via-pink-50 to-blue-100 py-8 sm:py-12 px-4 rounded-3xl">
         <div className="max-w-7xl mx-auto">
+          <ResponsiveImage
+            name="profile-banner"
+            alt="Profile banner"
+            className="w-full h-40 object-cover rounded-xl border-2 border-gray-200 shadow mb-6 max-w-5xl mx-auto"
+            sizes="(max-width: 640px) 100vw, 880px"
+          />
           {/* Heading */}
           <div className="text-center mb-6 sm:mb-8">
             <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-gray-900 mb-2">

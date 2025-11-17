@@ -1,13 +1,14 @@
 // WordScramble.jsx
 // Purpose: Unscramble words educational game
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { getAgeGroup } from "../utils/userUtils";
 import { apiFetch } from "../utils/api";
 import AchievementToast from "../components/AchievementToast";
 import AnimatedPage from "../components/AnimatedPage";
 import GameToolbar from "../components/GameToolbar";
+import ConfettiLayer from "../components/ConfettiLayer";
 import { sfx } from "../utils/sfx";
 
 // Scramble a word randomly
@@ -104,6 +105,7 @@ const wordPoolByAge = {
 
 export default function WordScramble() {
   const navigate = useNavigate();
+  const confettiRef = useRef(null);
   const ageGroup = getAgeGroup();
   const wordPool = wordPoolByAge[ageGroup] || wordPoolByAge["9-14"];
 
@@ -156,39 +158,65 @@ export default function WordScramble() {
     }
   };
 
+  const saveScore = async (finalScoreToSave) => {
+    const token = localStorage.getItem("token");
+    if (!token) {
+      setSaveError("You're not logged in. Scores won't be saved.");
+      return;
+    }
+    try {
+      const res = await apiFetch("/api/scores", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          score: finalScoreToSave,
+          total: totalWords,
+          gameType: "word-scramble",
+        }),
+      });
+      if (!res.ok) {
+        let detail = "";
+        try {
+          const err = await res.json();
+          detail = err?.message ? ` (${err.message})` : "";
+        } catch {}
+        setSaveError(
+          `Couldn't save score. Server responded ${res.status}${detail}.`
+        );
+        return;
+      }
+      const data = await res.json();
+      setSaveError("");
+      if (data.newAchievements && data.newAchievements.length > 0) {
+        setNewAchievements(data.newAchievements);
+      }
+    } catch (error) {
+      console.error("Error saving score:", error);
+      const offline =
+        typeof navigator !== "undefined" && navigator?.onLine === false;
+      setSaveError(
+        offline
+          ? "You're offline. Reconnect and try again."
+          : "Couldn't save score. Network error."
+      );
+    }
+  };
+
   const completeGame = async (finalScore = score) => {
     setIsComplete(true);
-    sfx.play("complete");
-    const token = localStorage.getItem("token");
-    if (token) {
-      try {
-        const res = await apiFetch("/api/scores", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-          },
-          body: JSON.stringify({
-            score: finalScore,
-            total: totalWords,
-            gameType: "word-scramble",
-          }),
-        });
-        if (!res.ok) {
-          setSaveError("Couldn't save score. Please log in again.");
-          return;
-        }
-        const data = await res.json();
-        if (data.newAchievements && data.newAchievements.length > 0) {
-          setNewAchievements(data.newAchievements);
-        }
-      } catch (error) {
-        console.error("Error saving score:", error);
-        setSaveError("Couldn't save score. Check your connection.");
+    try {
+      sfx.play("complete");
+    } catch {}
+    // Trigger confetti
+    setTimeout(() => {
+      if (confettiRef.current?.burst) {
+        confettiRef.current.burst();
       }
-    } else {
-      setSaveError("You're not logged in. Scores won't be saved.");
-    }
+    }, 300);
+    await saveScore(finalScore);
   };
 
   const skipWord = () => {
@@ -257,6 +285,7 @@ export default function WordScramble() {
 
   return (
     <AnimatedPage>
+      <ConfettiLayer ref={confettiRef} />
       {/* Live region for screen reader announcements */}
       <div
         className="sr-only"
@@ -415,6 +444,17 @@ export default function WordScramble() {
                     >
                       🔄 Play Again
                     </button>
+                    {saveError && (
+                      <button
+                        onClick={() => {
+                          sfx.play("click");
+                          saveScore(score);
+                        }}
+                        className="btn bg-amber-200 text-gray-900 hover:bg-amber-300"
+                      >
+                        Retry Save
+                      </button>
+                    )}
                     <button
                       onClick={() => {
                         sfx.play("click");

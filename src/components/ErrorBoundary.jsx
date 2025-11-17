@@ -3,7 +3,6 @@
 // Prevents the entire app from crashing when a component errors
 
 import React from "react";
-import { Link } from "react-router-dom";
 
 class ErrorBoundary extends React.Component {
   constructor(props) {
@@ -43,12 +42,12 @@ class ErrorBoundary extends React.Component {
               >
                 🔄 Try Again
               </button>
-              <Link
-                to="/"
+              <a
+                href="/"
                 className="block w-full bg-blue-100 hover:bg-blue-200 text-blue-900 font-semibold py-3 px-6 rounded-lg transition"
               >
                 🏠 Go Home
-              </Link>
+              </a>
             </div>
             {process.env.NODE_ENV === "development" && this.state.error && (
               <details className="mt-6 text-left">

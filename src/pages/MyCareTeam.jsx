@@ -7,6 +7,7 @@ import { useEffect, useState } from "react";
 import { apiFetch } from "../utils/api";
 import { showToast } from "../components/Toast";
 import { ListSkeleton } from "../components/LoadingSkeleton";
+import LoadingErrorEmpty from "../components/LoadingErrorEmpty";
 import AnimatedPage from "../components/AnimatedPage";
 
 export default function MyCareTeam() {
@@ -453,272 +454,33 @@ export default function MyCareTeam() {
                   <span>👥</span>
                   <span>Your Care Team</span>
                 </h2>
-
-                {loading && <ListSkeleton count={3} />}
-                {error && !loading && (
-                  <p className="text-red-600 font-semibold">{error}</p>
-                )}
-                {!loading && !error && members.length === 0 && (
-                  <p className="text-gray-700">
-                    No care team members added yet. Add your first team member
-                    above!
-                  </p>
-                )}
-
-                <div className="space-y-4">
-                  {members.map((member) => (
-                    <div
-                      key={member._id}
-                      className="bg-gradient-to-r from-blue-50 to-purple-50 rounded-xl p-4 sm:p-5 border-2 border-blue-200 hover:shadow-md transition-shadow"
-                    >
-                      {editingId === member._id ? (
-                        <div className="space-y-3">
-                          <div className="flex items-center gap-3">
-                            <div className="text-3xl sm:text-4xl flex-shrink-0">
-                              {getRoleEmoji(eRole)}
-                            </div>
-                            <h3 className="text-lg sm:text-xl font-bold text-gray-800">
-                              Edit Team Member
-                            </h3>
+                <LoadingErrorEmpty
+                  loading={loading}
+                  error={error}
+                  empty={members.length === 0}
+                  loadingText="Loading care team..."
+                  errorText={error || "Could not load care team."}
+                  emptyText="No care team members added yet. Add your first team member above!"
+                >
+                  <div className="space-y-4">
+                    {members.map((member) => (
+                      <div
+                        key={member._id}
+                        className="bg-gradient-to-r from-blue-50 to-purple-50 rounded-xl p-4 sm:p-5 border-2 border-blue-200 hover:shadow-md transition-shadow"
+                      >
+                        {editingId === member._id ? (
+                          <div className="space-y-3">
+                            {/* ...existing edit form code... */}
                           </div>
-                          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                            <div className="sm:col-span-2">
-                              <label
-                                className="block text-sm font-semibold text-gray-700 mb-1"
-                                htmlFor={`ename-${member._id}`}
-                              >
-                                Name
-                              </label>
-                              <input
-                                id={`ename-${member._id}`}
-                                value={eName}
-                                onChange={(e) => setEName(e.target.value)}
-                                className="w-full border-2 border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-mint-400"
-                              />
-                            </div>
-                            <div>
-                              <label
-                                className="block text-sm font-semibold text-gray-700 mb-1"
-                                htmlFor={`erole-${member._id}`}
-                              >
-                                Role
-                              </label>
-                              <input
-                                id={`erole-${member._id}`}
-                                value={eRole}
-                                onChange={(e) => setERole(e.target.value)}
-                                className="w-full border-2 border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-mint-400"
-                              />
-                            </div>
-                            <div>
-                              <label
-                                className="block text-sm font-semibold text-gray-700 mb-1"
-                                htmlFor={`espec-${member._id}`}
-                              >
-                                Specialty
-                              </label>
-                              <input
-                                id={`espec-${member._id}`}
-                                value={eSpecialty}
-                                onChange={(e) => setESpecialty(e.target.value)}
-                                className="w-full border-2 border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-mint-400"
-                              />
-                            </div>
-                            <div>
-                              <label
-                                className="block text-sm font-semibold text-gray-700 mb-1"
-                                htmlFor={`ephone-${member._id}`}
-                              >
-                                Phone
-                              </label>
-                              <input
-                                id={`ephone-${member._id}`}
-                                value={ePhone}
-                                onChange={(e) => setEPhone(e.target.value)}
-                                className="w-full border-2 border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-mint-400"
-                              />
-                            </div>
-                            <div>
-                              <label
-                                className="block text-sm font-semibold text-gray-700 mb-1"
-                                htmlFor={`eemail-${member._id}`}
-                              >
-                                Email
-                              </label>
-                              <input
-                                id={`eemail-${member._id}`}
-                                value={eEmail}
-                                onChange={(e) => setEEmail(e.target.value)}
-                                className="w-full border-2 border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-mint-400"
-                              />
-                            </div>
-                            <div>
-                              <label
-                                className="block text-sm font-semibold text-gray-700 mb-1"
-                                htmlFor={`ehosp-${member._id}`}
-                              >
-                                Hospital
-                              </label>
-                              <input
-                                id={`ehosp-${member._id}`}
-                                value={eHospital}
-                                onChange={(e) => setEHospital(e.target.value)}
-                                className="w-full border-2 border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-mint-400"
-                              />
-                            </div>
-                            <div>
-                              <label
-                                className="block text-sm font-semibold text-gray-700 mb-1"
-                                htmlFor={`edept-${member._id}`}
-                              >
-                                Department
-                              </label>
-                              <input
-                                id={`edept-${member._id}`}
-                                value={eDepartment}
-                                onChange={(e) => setEDepartment(e.target.value)}
-                                className="w-full border-2 border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-mint-400"
-                              />
-                            </div>
-                            <div className="sm:col-span-2">
-                              <label
-                                className="block text-sm font-semibold text-gray-700 mb-1"
-                                htmlFor={`enotes-${member._id}`}
-                              >
-                                Notes
-                              </label>
-                              <textarea
-                                id={`enotes-${member._id}`}
-                                value={eNotes}
-                                onChange={(e) => setENotes(e.target.value)}
-                                className="w-full border-2 border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-mint-400"
-                                rows="2"
-                              />
-                            </div>
-                            <div className="sm:col-span-2 flex gap-2">
-                              <button
-                                onClick={() => saveEdit(member._id)}
-                                disabled={savingEdit}
-                                className="bg-mint-300 hover:bg-mint-400 disabled:opacity-50 text-gray-900 font-bold py-2 px-4 rounded-lg shadow"
-                              >
-                                {savingEdit ? "Saving..." : "Save"}
-                              </button>
-                              <button
-                                onClick={cancelEdit}
-                                type="button"
-                                className="bg-gray-200 hover:bg-gray-300 text-gray-800 font-semibold py-2 px-4 rounded-lg"
-                              >
-                                Cancel
-                              </button>
-                            </div>
+                        ) : (
+                          <div className="flex items-start gap-3 sm:gap-4">
+                            {/* ...existing member display code... */}
                           </div>
-                        </div>
-                      ) : (
-                        <div className="flex items-start gap-3 sm:gap-4">
-                          <div className="text-3xl sm:text-4xl flex-shrink-0">
-                            {getRoleEmoji(member.role)}
-                          </div>
-                          <div className="flex-1 min-w-0">
-                            <h3 className="text-lg sm:text-xl font-bold text-gray-800 mb-1">
-                              {member.name}
-                            </h3>
-                            <div className="space-y-1 text-sm sm:text-base text-gray-700">
-                              {member.role && (
-                                <p className="flex items-center gap-2">
-                                  <span className="font-semibold">
-                                    👔 Role:
-                                  </span>
-                                  <span>{member.role}</span>
-                                </p>
-                              )}
-                              {member.specialty && (
-                                <p className="flex items-center gap-2">
-                                  <span className="font-semibold">
-                                    🔬 Specialty:
-                                  </span>
-                                  <span>{member.specialty}</span>
-                                </p>
-                              )}
-                              {member.phone && (
-                                <p className="flex items-center gap-2">
-                                  <span className="font-semibold">
-                                    📞 Phone:
-                                  </span>
-                                  <span>
-                                    <a
-                                      href={`tel:${member.phone}`}
-                                      className="text-blue-600 hover:underline"
-                                    >
-                                      {member.phone}
-                                    </a>
-                                  </span>
-                                </p>
-                              )}
-                              {member.email && (
-                                <p className="flex items-center gap-2">
-                                  <span className="font-semibold">
-                                    📧 Email:
-                                  </span>
-                                  <span>
-                                    <a
-                                      href={`mailto:${member.email}`}
-                                      className="text-blue-600 hover:underline"
-                                    >
-                                      {member.email}
-                                    </a>
-                                  </span>
-                                </p>
-                              )}
-                              {member.hospital && (
-                                <p className="flex items-center gap-2">
-                                  <span className="font-semibold">
-                                    🏥 Hospital:
-                                  </span>
-                                  <span>{member.hospital}</span>
-                                </p>
-                              )}
-                              {member.department && (
-                                <p className="flex items-center gap-2">
-                                  <span className="font-semibold">
-                                    🏢 Department:
-                                  </span>
-                                  <span>{member.department}</span>
-                                </p>
-                              )}
-                              {member.notes && (
-                                <p className="flex items-start gap-2 mt-2">
-                                  <span className="font-semibold">
-                                    📝 Notes:
-                                  </span>
-                                  <span className="flex-1">{member.notes}</span>
-                                </p>
-                              )}
-                            </div>
-                          </div>
-                          <div className="ml-auto flex gap-2">
-                            <button
-                              onClick={() => startEdit(member)}
-                              className="text-sm bg-blue-100 border border-blue-300 text-blue-700 rounded-lg px-3 py-2 hover:bg-blue-200"
-                              aria-label="Edit care team member"
-                            >
-                              Edit
-                            </button>
-                            <button
-                              onClick={() => handleDelete(member._id)}
-                              disabled={deletingId === member._id}
-                              className="text-sm bg-red-100 border border-red-300 text-red-700 rounded-lg px-3 py-2 hover:bg-red-200 disabled:opacity-50"
-                              aria-label="Delete care team member"
-                            >
-                              {deletingId === member._id
-                                ? "Deleting..."
-                                : "Delete"}
-                            </button>
-                          </div>
-                        </div>
-                      )}
-                    </div>
-                  ))}
-                </div>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                </LoadingErrorEmpty>
               </section>
 
               {/* Tips Box */}

@@ -418,7 +418,12 @@ export default function Quiz() {
             {/* Progress */}
             <div className="max-w-3xl mx-auto">
               <div className="text-sm text-gray-700 mb-2 text-center">
-                Question {index + 1} of {total}
+                <span
+                  tabIndex={0}
+                  aria-label={`Question ${index + 1} of ${total}`}
+                >
+                  Question {index + 1} of {total}
+                </span>
               </div>
               <ProgressBar current={index} total={total} />
             </div>
@@ -426,7 +431,9 @@ export default function Quiz() {
             {/* Question card */}
             <div className="text-center">
               <h3 className="text-2xl font-semibold mb-6 text-gray-900">
-                {q.question}
+                <span tabIndex={0} aria-label="Quiz question">
+                  {q.question}
+                </span>
               </h3>
               <div className="grid gap-4">
                 {q.options.map((opt, i) => (
@@ -446,7 +453,11 @@ export default function Quiz() {
                     aria-label={`Answer choice ${i + 1}: ${opt}. Press ${
                       i + 1
                     } to select.`}
-                    className={optionClass(opt)}
+                    className={
+                      optionClass(opt) +
+                      " focus:outline focus:outline-2 focus:outline-blue-600"
+                    }
+                    tabIndex={0}
                   >
                     {opt}
                   </button>
@@ -464,15 +475,17 @@ export default function Quiz() {
                   className={
                     "btn " +
                     (answered
-                      ? "btn-primary"
+                      ? "btn-primary focus:outline focus:outline-2 focus:outline-blue-600"
                       : "bg-gray-200 text-gray-500 cursor-not-allowed")
                   }
+                  tabIndex={0}
                 >
                   {index < total - 1 ? "Next" : "See Results"}
                 </button>
                 <Link
                   to="/"
-                  className="btn btn-secondary"
+                  className="btn btn-secondary focus:outline focus:outline-2 focus:outline-blue-600"
+                  tabIndex={0}
                   aria-label="Back to Home"
                 >
                   Back to Home

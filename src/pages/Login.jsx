@@ -5,6 +5,7 @@ import { validateRequired } from "../utils/validation";
 import { setAuthData } from "../utils/auth";
 import { API_BASE } from "../utils/api";
 import AnimatedPage from "../components/AnimatedPage";
+import ResponsiveImage from "../components/ResponsiveImage";
 
 export default function Login() {
   const [username, setUsername] = useState("");
@@ -67,19 +68,34 @@ export default function Login() {
 
   return (
     <AnimatedPage>
-      <div className="bg-gradient-to-br from-purple-100 via-pink-50 to-blue-100 rounded-3xl py-12 px-4">
+      <main
+        className="bg-gradient-to-br from-purple-100 via-pink-50 to-blue-100 rounded-3xl py-12 px-4"
+        role="main"
+        aria-label="Login page"
+      >
         <div className="max-w-md md:max-w-lg mx-auto space-y-6">
+          <ResponsiveImage
+            name="auth-hero"
+            alt="Secure login illustration"
+            className="w-full h-40 object-cover rounded-xl border-2 border-gray-200 shadow max-w-xl mx-auto"
+            sizes="(max-width: 640px) 100vw, 560px"
+          />
           <div className="bg-white rounded-2xl p-4 sm:p-6 md:p-8 border-2 border-gray-200 shadow-lg text-center">
-            <div
-              className="text-4xl sm:text-5xl md:text-6xl mb-4"
-              aria-hidden="true"
+            <ResponsiveImage
+              name="auth-hero"
+              alt="Login icon"
+              className="w-16 h-16 sm:w-20 sm:h-20 md:w-24 md:h-24 mx-auto mb-4 object-cover rounded-lg border-2 border-gray-200 shadow"
+              sizes="96px"
+            />
+            <h2
+              className="text-3xl sm:text-4xl font-bold text-gray-800 mb-2"
+              tabIndex={0}
             >
-              🔑
-            </div>
-            <h2 className="text-3xl sm:text-4xl font-bold text-gray-800 mb-2">
               Login
             </h2>
-            <p className="text-gray-600">Welcome back to your portal</p>
+            <p className="text-gray-600" tabIndex={0}>
+              Welcome back to your portal
+            </p>
           </div>
 
           <div className="bg-white rounded-2xl p-4 sm:p-6 md:p-8 border-2 border-gray-200 shadow-lg">
@@ -184,8 +200,9 @@ export default function Login() {
               </div>
               <button
                 type="submit"
-                className="btn btn-primary w-full h-12 md:text-lg"
+                className="btn btn-primary w-full h-12 md:text-lg focus:outline focus:outline-2 focus:outline-blue-600"
                 disabled={isLoading}
+                aria-label="Submit login form"
               >
                 {isLoading ? "Logging in..." : "Login"}
               </button>
@@ -194,7 +211,9 @@ export default function Login() {
               <p>
                 <Link
                   to="/forgot-password"
-                  className="text-indigo-600 hover:underline font-semibold"
+                  className="text-indigo-600 hover:underline font-semibold focus:outline focus:outline-2 focus:outline-blue-600"
+                  aria-label="Forgot password"
+                  tabIndex={0}
                 >
                   Forgot password?
                 </Link>
@@ -203,7 +222,9 @@ export default function Login() {
                 Don't have an account?{" "}
                 <Link
                   to="/register"
-                  className="text-indigo-600 hover:underline font-semibold"
+                  className="text-indigo-600 hover:underline font-semibold focus:outline focus:outline-2 focus:outline-blue-600"
+                  aria-label="Register new account"
+                  tabIndex={0}
                 >
                   Register
                 </Link>
@@ -211,7 +232,7 @@ export default function Login() {
             </div>
           </div>
         </div>
-      </div>
+      </main>
     </AnimatedPage>
   );
 }

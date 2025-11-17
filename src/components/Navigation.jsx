@@ -7,6 +7,10 @@ import { getUserFromStorage, logout } from "../utils/userUtils";
 
 export default function Navigation() {
   const user = getUserFromStorage();
+  // DEBUG: Log user object to console to diagnose staff link issue
+  useEffect(() => {
+    console.log("Navigation.jsx user:", user);
+  }, [user]);
   const navigate = useNavigate();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const mobileMenuRef = useRef(null);
@@ -113,6 +117,19 @@ export default function Navigation() {
 
             {user ? (
               <>
+                {/* Staff dashboard link for staff users */}
+                {user.isStaff && (
+                  <Link
+                    to="/staff"
+                    className="inline-flex items-center gap-1 px-3 py-2 rounded-lg bg-blue-50 hover:bg-blue-100 transition-colors text-blue-800 font-medium border border-blue-300"
+                    aria-label="Staff Dashboard"
+                  >
+                    <span className="text-xl" aria-hidden="true">
+                      🩺
+                    </span>
+                    <span>Staff</span>
+                  </Link>
+                )}
                 {user.isAdmin && (
                   <Link
                     to="/admin"
@@ -249,6 +266,19 @@ export default function Navigation() {
 
               {user ? (
                 <>
+                  {/* Staff dashboard link for staff users (mobile) */}
+                  {user.isStaff && (
+                    <Link
+                      to="/staff"
+                      className="flex items-center gap-2 px-4 py-3 rounded-lg bg-blue-50 hover:bg-blue-100 transition-colors text-blue-800 font-medium border border-blue-300"
+                      onClick={closeMobileMenu}
+                    >
+                      <span className="text-xl" aria-hidden="true">
+                        🩺
+                      </span>
+                      <span>Staff</span>
+                    </Link>
+                  )}
                   {user.isAdmin && (
                     <Link
                       to="/admin"

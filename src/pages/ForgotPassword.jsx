@@ -3,6 +3,7 @@ import { useState } from "react";
 import { Link } from "react-router-dom";
 import AnimatedPage from "../components/AnimatedPage";
 import { API_BASE } from "../utils/api";
+import ResponsiveImage from "../components/ResponsiveImage";
 
 export default function ForgotPassword() {
   const [username, setUsername] = useState("");
@@ -55,13 +56,19 @@ export default function ForgotPassword() {
     <AnimatedPage>
       <div className="bg-gradient-to-br from-purple-100 via-pink-50 to-blue-100 rounded-3xl py-12 px-4">
         <div className="max-w-md md:max-w-lg mx-auto space-y-5 sm:space-y-6">
+          <ResponsiveImage
+            name="auth-hero"
+            alt="Password reset illustration"
+            className="w-full h-40 object-cover rounded-xl border-2 border-gray-200 shadow max-w-xl mx-auto"
+            sizes="(max-width: 640px) 100vw, 560px"
+          />
           <div className="bg-white rounded-2xl p-4 sm:p-6 md:p-8 border-2 border-gray-200 shadow-lg text-center">
-            <div
-              className="text-4xl sm:text-5xl md:text-6xl mb-4"
-              aria-hidden="true"
-            >
-              🔐
-            </div>
+            <ResponsiveImage
+              name="auth-hero"
+              alt="Forgot password icon"
+              className="w-16 h-16 sm:w-20 sm:h-20 md:w-24 md:h-24 mx-auto mb-4 object-cover rounded-lg border-2 border-gray-200 shadow"
+              sizes="96px"
+            />
             <h2 className="text-3xl sm:text-4xl font-bold text-gray-800 mb-2">
               Forgot Password
             </h2>

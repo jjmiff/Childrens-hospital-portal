@@ -1,3 +1,4 @@
+// ...existing code...
 const express = require("express");
 require("dotenv").config(); // Load environment variables
 const mongoose = require("mongoose");
@@ -119,6 +120,24 @@ const staffOnly = async (req, res, next) => {
 // Example route
 app.get("/", (req, res) => {
   res.send("Welcome to the backend!");
+});
+
+// Staff: search/list patients
+app.get("/api/staff/patients", protect, staffOnly, async (req, res) => {
+  try {
+    const search = req.query.search?.trim();
+    const query = { userType: "child" };
+    if (search) {
+      query.username = { $regex: search, $options: "i" };
+    }
+    const patients = await User.find(query)
+      .select("_id username ageGroup dateOfBirth avatar")
+      .sort({ username: 1 })
+      .limit(50);
+    res.status(200).json({ patients });
+  } catch (error) {
+    res.status(500).json({ message: "Error fetching patients" });
+  }
 });
 
 // Lightweight health check (no secrets)
@@ -246,6 +265,23 @@ const unlockAchievement = async (userId, achievementId, newAchievements) => {
 };
 
 // API route for user registration
+// Admin-only: Set isStaff true for all staff users (one-time fix)
+app.post("/api/admin/fix-staff-flag", protect, async (req, res) => {
+  // Only allow admins
+  if (!req.user || !req.user.isAdmin) {
+    return res.status(403).json({ message: "Admins only." });
+  }
+  try {
+    const result = await User.updateMany(
+      { userType: "staff" },
+      { $set: { isStaff: true } }
+    );
+    res.json({ message: `Updated ${result.modifiedCount} staff users.` });
+  } catch (error) {
+    console.error("Error updating staff users:", error);
+    res.status(500).json({ message: "Error updating staff users" });
+  }
+});
 app.post("/api/users/register", async (req, res) => {
   try {
     const { username, password, dateOfBirth, userType } = req.body;
@@ -313,6 +349,11 @@ app.post("/api/users/register", async (req, res) => {
     if (userType === "child") {
       userData.dateOfBirth = new Date(dateOfBirth);
       userData.ageGroup = ageGroup;
+    }
+
+    // Set isStaff for staff users
+    if (userType === "staff") {
+      userData.isStaff = true;
     }
 
     const newUser = new User(userData);
@@ -400,6 +441,7 @@ app.post("/api/users/login", async (req, res) => {
         ageGroup: user.ageGroup,
         avatar: user.avatar,
         isAdmin: user.isAdmin,
+        isStaff: user.isStaff,
         dateOfBirth: user.dateOfBirth,
       },
     });
@@ -801,6 +843,28 @@ app.delete("/api/appointments/:id", protect, async (req, res) => {
 });
 
 // ===== MEDICINE ROUTES =====
+// Staff: get medicines for any patient
+app.get(
+  "/api/staff/medicines/:userId",
+  protect,
+  staffOnly,
+  async (req, res) => {
+    try {
+      const { userId } = req.params;
+      if (!userId || userId === "undefined") {
+        return res.status(400).json({ message: "Invalid userId parameter" });
+      }
+      const meds = await Medicine.find({ userId })
+        .populate("updatedBy", "username userType")
+        .sort({ active: -1, name: 1 })
+        .limit(200);
+      res.status(200).json(meds);
+    } catch (error) {
+      console.error("Error fetching medicines for staff:", error);
+      res.status(500).json({ message: "Error fetching medicines" });
+    }
+  }
+);
 // Create medicine (medical staff only)
 app.post("/api/medicines", protect, staffOnly, async (req, res) => {
   try {

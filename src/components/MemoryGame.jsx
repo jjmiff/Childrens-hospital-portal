@@ -5,6 +5,8 @@ import { apiFetch } from "../utils/api";
 import AchievementToast from "./AchievementToast";
 import AnimatedPage from "./AnimatedPage";
 import GameToolbar from "./GameToolbar";
+import ConfettiLayer from "./ConfettiLayer";
+import { sfx } from "../utils/sfx";
 
 const cardImages = ["🍎", "🍌", "🍓", "🍇", "🍉", "🥝", "🍍", "🍑", "🍒", "🍋"];
 
@@ -42,6 +44,7 @@ export default function MemoryGame() {
   const [newAchievements, setNewAchievements] = useState([]);
   const [currentAchievement, setCurrentAchievement] = useState(null);
   const timerRef = useRef(null);
+  const confettiRef = useRef(null);
 
   useEffect(() => {
     if (isTimerRunning) {
@@ -80,6 +83,9 @@ export default function MemoryGame() {
 
       if (firstCard.content === secondCard.content) {
         // Match found
+        try {
+          sfx.play("correct");
+        } catch {}
         setCards((prevCards) =>
           prevCards.map((card) =>
             card.content === firstCard.content
@@ -92,6 +98,9 @@ export default function MemoryGame() {
         setMoves((prev) => prev + 1);
       } else {
         // No match - flip back after delay
+        try {
+          sfx.play("wrong");
+        } catch {}
         setTimeout(() => {
           setCards((prevCards) =>
             prevCards.map((card) =>
@@ -140,6 +149,15 @@ export default function MemoryGame() {
   useEffect(() => {
     if (isGameWon) {
       setIsTimerRunning(false);
+      try {
+        sfx.play("complete");
+      } catch {}
+      // Trigger confetti
+      setTimeout(() => {
+        if (confettiRef.current?.burst) {
+          confettiRef.current.burst();
+        }
+      }, 300);
 
       if (!hasSavedRef.current) {
         // Save a simple score for memory: pairs found out of total pairs
@@ -218,6 +236,7 @@ export default function MemoryGame() {
 
   return (
     <AnimatedPage>
+      <ConfettiLayer ref={confettiRef} />
       <div className="bg-gradient-to-br from-purple-100 via-pink-50 to-blue-100 rounded-3xl py-12 px-4">
         <div className="max-w-4xl mx-auto">
           <div className="bg-white rounded-2xl p-4 sm:p-6 md:p-8 border-2 border-gray-200 shadow-lg">
@@ -254,6 +273,8 @@ export default function MemoryGame() {
                       card.isFlipped || card.isMatched ? "flipped" : ""
                     }`}
                     onClick={() => handleCardClick(card)}
+                    tabIndex={0}
+                    aria-label={`Memory card: ${card.content}`}
                   >
                     <div className="card-inner">
                       <div className="card-front">
@@ -273,15 +294,27 @@ export default function MemoryGame() {
                       You won!
                     </p>
                     <div className="flex flex-wrap gap-3 justify-center mt-4">
-                      <button onClick={restartGame} className="btn btn-primary">
+                      <button
+                        onClick={restartGame}
+                        className="btn btn-primary focus:outline focus:outline-2 focus:outline-blue-600"
+                        tabIndex={0}
+                        aria-label="Play again"
+                      >
                         🔄 Play Again
                       </button>
-                      <a href="/games" className="btn btn-secondary">
+                      <a
+                        href="/games"
+                        className="btn btn-secondary focus:outline focus:outline-2 focus:outline-blue-600"
+                        tabIndex={0}
+                        aria-label="Back to games"
+                      >
                         🎮 Back to Games
                       </a>
                       <a
                         href="/"
-                        className="btn bg-sky-200 text-gray-800 hover:bg-sky-300"
+                        className="btn bg-sky-200 text-gray-800 hover:bg-sky-300 focus:outline focus:outline-2 focus:outline-blue-600"
+                        tabIndex={0}
+                        aria-label="Back to home"
                       >
                         🏠 Home
                       </a>

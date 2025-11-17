@@ -6,11 +6,13 @@ import { useEffect } from "react";
 import { Link } from "react-router-dom";
 import { getAgeGroup, getAgeGroupLabel } from "../utils/userUtils";
 import AnimatedPage from "../components/AnimatedPage";
+import ResponsiveImage from "../components/ResponsiveImage";
 
 const departments = [
   {
     id: "mri",
     icon: "🔬",
+    image: "mri-tile",
     title: "MRI Scanner",
     description: "A big camera that takes pictures inside your body",
     to: "/explainers/mri",
@@ -18,6 +20,7 @@ const departments = [
   {
     id: "xray",
     icon: "📷",
+    image: "explainers-xray",
     title: "X-Ray Room",
     description: "Special photos that show your bones",
     to: "/explainers/xray",
@@ -25,6 +28,7 @@ const departments = [
   {
     id: "ward",
     icon: "🛏️",
+    image: "explainers-ward",
     title: "Hospital Ward",
     description: "Your room and where you'll stay",
     to: "/explainers/ward",
@@ -32,6 +36,7 @@ const departments = [
   {
     id: "playroom",
     icon: "🎨",
+    image: "explainers-ward",
     title: "Play Areas",
     description: "Fun places to play and do activities",
     to: "/explainers/playroom",
@@ -39,6 +44,7 @@ const departments = [
   {
     id: "theatre",
     icon: "🏥",
+    image: "explainers-surgery",
     title: "Operating Theatre",
     description: "The special room where operations happen",
     to: "/explainers/theatre",
@@ -46,6 +52,7 @@ const departments = [
   {
     id: "aande",
     icon: "🚑",
+    image: "explainers-aande",
     title: "A&E Department",
     description: "Accident & Emergency — when you need help right away",
     to: "/explainers/aande",
@@ -53,6 +60,7 @@ const departments = [
   {
     id: "map",
     icon: "🗺️",
+    image: "explainers-pharmacy",
     title: "Hospital Map",
     description: "Find your way around the hospital",
     to: "/explainers/map",
@@ -80,7 +88,12 @@ export default function Explainers() {
       <div className="bg-gradient-to-br from-purple-100 via-pink-50 to-blue-100 rounded-3xl py-12 px-4">
         <div className="max-w-6xl mx-auto space-y-6">
           <div className="bg-white rounded-2xl p-4 sm:p-6 md:p-8 border-2 border-gray-200 shadow-lg text-center">
-            <div className="text-4xl sm:text-5xl md:text-6xl mb-4">🏥</div>
+            <ResponsiveImage
+              name="explainers-ward"
+              alt="Explainers icon"
+              className="w-16 h-16 sm:w-20 sm:h-20 md:w-24 md:h-24 mx-auto mb-4 object-cover rounded-lg border-2 border-gray-200 shadow"
+              sizes="96px"
+            />
             <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-gray-800 mb-4">
               Learn About the Hospital
             </h2>
@@ -121,12 +134,12 @@ export default function Explainers() {
                   aria-label={`Learn about ${dept.title}`}
                 >
                   <div className="text-center">
-                    <div
-                      className="text-4xl sm:text-5xl md:text-6xl mb-4"
-                      aria-hidden="true"
-                    >
-                      {dept.icon}
-                    </div>
+                    <ResponsiveImage
+                      name={dept.image}
+                      alt={`${dept.title} illustration`}
+                      className="w-24 h-24 mx-auto mb-4 object-cover rounded-lg"
+                      sizes="96px"
+                    />
                     <h3 className="text-xl font-bold text-gray-800 mb-2">
                       {dept.title}
                     </h3>

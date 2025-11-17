@@ -8,7 +8,7 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import AnimatedPage from "../components/AnimatedPage";
-import hero from "../assets/images/hero-placeholder.svg";
+import ResponsiveImage from "../components/ResponsiveImage";
 
 export default function Home() {
   const [user, setUser] = useState(null);
@@ -26,18 +26,32 @@ export default function Home() {
 
   return (
     <AnimatedPage>
-      <div className="bg-gradient-to-br from-purple-100 via-pink-50 to-blue-100 rounded-3xl py-12 px-4">
+      <main
+        className="bg-gradient-to-br from-purple-100 via-pink-50 to-blue-100 rounded-3xl py-12 px-4"
+        role="main"
+        aria-label="Home page"
+      >
         <div className="max-w-6xl mx-auto space-y-6">
-          <img
-            src={hero}
-            alt="Children smiling in a hospital playroom (placeholder)"
-            className="w-full h-auto rounded-2xl border-2 border-gray-200 shadow"
+          <ResponsiveImage
+            name="home-hero"
+            alt="Children smiling in a friendly hospital environment"
+            className="w-full h-64 object-cover rounded-xl border-2 border-gray-200 shadow max-w-5xl mx-auto"
+            sizes="(max-width: 640px) 100vw, 800px"
+            priority={true}
           />
           {/* Main intro card */}
           <div className="bg-white rounded-2xl p-4 sm:p-6 md:p-8 border-2 border-gray-200 shadow-lg text-center">
             {/* h1 = main title for this page */}
-            <div className="text-4xl sm:text-5xl md:text-6xl mb-4">🏥</div>
-            <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold text-gray-800 mb-4">
+            <ResponsiveImage
+              name="explainers-ward"
+              alt="Hospital icon"
+              className="w-16 h-16 sm:w-20 sm:h-20 md:w-24 md:h-24 mx-auto mb-4 object-cover rounded-lg border-2 border-gray-200 shadow"
+              sizes="96px"
+            />
+            <h1
+              className="text-3xl sm:text-4xl md:text-5xl font-bold text-gray-800 mb-4"
+              tabIndex={0}
+            >
               Welcome to the Children's Hospital
             </h1>
 
@@ -61,15 +75,27 @@ export default function Home() {
           {/* Login/Register or Profile buttons */}
           <div className="flex justify-center gap-4 mb-6">
             {user ? (
-              <Link to="/profile" className="btn btn-primary">
+              <Link
+                to="/profile"
+                className="btn btn-primary focus:outline focus:outline-2 focus:outline-blue-600"
+                aria-label="Go to profile"
+              >
                 👤 My Profile
               </Link>
             ) : (
               <>
-                <Link to="/login" className="btn btn-primary">
+                <Link
+                  to="/login"
+                  className="btn btn-primary focus:outline focus:outline-2 focus:outline-blue-600"
+                  aria-label="Login"
+                >
                   Login
                 </Link>
-                <Link to="/register" className="btn btn-secondary">
+                <Link
+                  to="/register"
+                  className="btn btn-secondary focus:outline focus:outline-2 focus:outline-blue-600"
+                  aria-label="Register"
+                >
                   Register
                 </Link>
               </>
@@ -81,16 +107,31 @@ export default function Home() {
             {/* Games Card */}
             <Link
               to="/games"
-              className="bg-purple-100 rounded-2xl p-4 sm:p-6 border-2 border-gray-200 shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition-all duration-200"
+              className="bg-purple-100 rounded-2xl p-4 sm:p-6 border-2 border-gray-200 shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition-all duration-200 focus:outline focus:outline-2 focus:outline-blue-600"
               aria-label="Open Games"
+              tabIndex={0}
             >
               <div className="text-center">
-                <div className="text-4xl sm:text-5xl md:text-6xl mb-4">🎮</div>
-                <h2 className="text-xl sm:text-2xl font-bold text-gray-800 mb-2">
+                <ResponsiveImage
+                  name="quiz-tile"
+                  alt="Games icon"
+                  className="w-16 h-16 sm:w-20 sm:h-20 md:w-24 md:h-24 mx-auto mb-4 object-cover rounded-lg border-2 border-gray-200 shadow"
+                  sizes="96px"
+                />
+                <h2
+                  className="text-xl sm:text-2xl font-bold text-gray-800 mb-2"
+                  tabIndex={0}
+                >
                   Games
                 </h2>
-                <p className="text-gray-600 mb-4">Play to learn and have fun</p>
-                <button className="bg-white text-gray-700 px-6 py-2 rounded-lg font-semibold hover:bg-gray-50 transition-colors">
+                <p className="text-gray-600 mb-4" tabIndex={0}>
+                  Play to learn and have fun
+                </p>
+                <button
+                  className="bg-white text-gray-700 px-6 py-2 rounded-lg font-semibold hover:bg-gray-50 transition-colors focus:outline focus:outline-2 focus:outline-blue-600"
+                  tabIndex={0}
+                  aria-label="Explore games"
+                >
                   Explore →
                 </button>
               </div>
@@ -99,18 +140,31 @@ export default function Home() {
             {/* Explainers Card */}
             <Link
               to="/explainers"
-              className="bg-blue-100 rounded-2xl p-4 sm:p-6 border-2 border-gray-200 shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition-all duration-200"
+              className="bg-blue-100 rounded-2xl p-4 sm:p-6 border-2 border-gray-200 shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition-all duration-200 focus:outline focus:outline-2 focus:outline-blue-600"
               aria-label="Learn About the Hospital"
+              tabIndex={0}
             >
               <div className="text-center">
-                <div className="text-4xl sm:text-5xl md:text-6xl mb-4">🏥</div>
-                <h2 className="text-xl sm:text-2xl font-bold text-gray-800 mb-2">
+                <ResponsiveImage
+                  name="explainers-ward"
+                  alt="Explainers icon"
+                  className="w-16 h-16 sm:w-20 sm:h-20 md:w-24 md:h-24 mx-auto mb-4 object-cover rounded-lg border-2 border-gray-200 shadow"
+                  sizes="96px"
+                />
+                <h2
+                  className="text-xl sm:text-2xl font-bold text-gray-800 mb-2"
+                  tabIndex={0}
+                >
                   Learn About the Hospital
                 </h2>
-                <p className="text-gray-600 mb-4">
+                <p className="text-gray-600 mb-4" tabIndex={0}>
                   Understand hospital procedures and areas
                 </p>
-                <button className="bg-white text-gray-700 px-6 py-2 rounded-lg font-semibold hover:bg-gray-50 transition-colors">
+                <button
+                  className="bg-white text-gray-700 px-6 py-2 rounded-lg font-semibold hover:bg-gray-50 transition-colors focus:outline focus:outline-2 focus:outline-blue-600"
+                  tabIndex={0}
+                  aria-label="Learn more about the hospital"
+                >
                   Learn More →
                 </button>
               </div>
@@ -119,16 +173,31 @@ export default function Home() {
             {/* FAQ Card */}
             <Link
               to="/faq"
-              className="bg-green-100 rounded-2xl p-4 sm:p-6 border-2 border-gray-200 shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition-all duration-200"
+              className="bg-green-100 rounded-2xl p-4 sm:p-6 border-2 border-gray-200 shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition-all duration-200 focus:outline focus:outline-2 focus:outline-blue-600"
               aria-label="Open Frequently Asked Questions"
+              tabIndex={0}
             >
               <div className="text-center">
-                <div className="text-4xl sm:text-5xl md:text-6xl mb-4">❓</div>
-                <h2 className="text-xl sm:text-2xl font-bold text-gray-800 mb-2">
+                <div
+                  className="text-4xl sm:text-5xl md:text-6xl mb-4"
+                  tabIndex={0}
+                >
+                  ❓
+                </div>
+                <h2
+                  className="text-xl sm:text-2xl font-bold text-gray-800 mb-2"
+                  tabIndex={0}
+                >
                   FAQ
                 </h2>
-                <p className="text-gray-600 mb-4">Common hospital questions</p>
-                <button className="bg-white text-gray-700 px-6 py-2 rounded-lg font-semibold hover:bg-gray-50 transition-colors">
+                <p className="text-gray-600 mb-4" tabIndex={0}>
+                  Common hospital questions
+                </p>
+                <button
+                  className="bg-white text-gray-700 px-6 py-2 rounded-lg font-semibold hover:bg-gray-50 transition-colors focus:outline focus:outline-2 focus:outline-blue-600"
+                  tabIndex={0}
+                  aria-label="Find answers to FAQs"
+                >
                   Find Answers →
                 </button>
               </div>
@@ -137,25 +206,38 @@ export default function Home() {
             {/* Medical Guidance Card */}
             <Link
               to="/medical-guidance"
-              className="bg-red-100 rounded-2xl p-4 sm:p-6 border-2 border-gray-200 shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition-all duration-200"
+              className="bg-red-100 rounded-2xl p-4 sm:p-6 border-2 border-gray-200 shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition-all duration-200 focus:outline focus:outline-2 focus:outline-blue-600"
               aria-label="Medical Help and Guides"
+              tabIndex={0}
             >
               <div className="text-center">
-                <div className="text-4xl sm:text-5xl md:text-6xl mb-4">💊</div>
-                <h2 className="text-xl sm:text-2xl font-bold text-gray-800 mb-2">
+                <ResponsiveImage
+                  name="explainers-pharmacy"
+                  alt="Medical guidance icon"
+                  className="w-16 h-16 sm:w-20 sm:h-20 md:w-24 md:h-24 mx-auto mb-4 object-cover rounded-lg border-2 border-gray-200 shadow"
+                  sizes="96px"
+                />
+                <h2
+                  className="text-xl sm:text-2xl font-bold text-gray-800 mb-2"
+                  tabIndex={0}
+                >
                   Medical Help & Guides
                 </h2>
-                <p className="text-gray-600 mb-4">
+                <p className="text-gray-600 mb-4" tabIndex={0}>
                   Learn about blood tests, medicine, surgery and more
                 </p>
-                <button className="bg-white text-gray-700 px-6 py-2 rounded-lg font-semibold hover:bg-gray-50 transition-colors">
+                <button
+                  className="bg-white text-gray-700 px-6 py-2 rounded-lg font-semibold hover:bg-gray-50 transition-colors focus:outline focus:outline-2 focus:outline-blue-600"
+                  tabIndex={0}
+                  aria-label="Learn more about medical help and guides"
+                >
                   Learn More →
                 </button>
               </div>
             </Link>
           </div>
         </div>
-      </div>
+      </main>
     </AnimatedPage>
   );
 }

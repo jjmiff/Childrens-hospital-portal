@@ -33,23 +33,26 @@ export default function GameToolbar({
       {onRestart && (
         <button
           onClick={handleRestart}
-          className="btn btn-primary text-sm md:text-base px-3 md:px-4 py-2 md:py-2"
+          className="btn btn-primary text-sm md:text-base px-3 md:px-4 py-2 md:py-2 focus:outline focus:outline-2 focus:outline-blue-600"
           aria-label="Restart game"
+          tabIndex={0}
         >
           🔄 Restart
         </button>
       )}
       <button
         onClick={withClick(() => navigate("/games"))}
-        className="btn btn-secondary text-sm md:text-base px-3 md:px-4 py-2 md:py-2"
+        className="btn btn-secondary text-sm md:text-base px-3 md:px-4 py-2 md:py-2 focus:outline focus:outline-2 focus:outline-blue-600"
         aria-label="Go to games page"
+        tabIndex={0}
       >
         🎮 Games
       </button>
       <button
         onClick={withClick(() => navigate("/"))}
-        className="btn bg-sky-200 text-gray-800 hover:bg-sky-300 text-sm md:text-base px-3 md:px-4 py-2 md:py-2"
+        className="btn bg-sky-200 text-gray-800 hover:bg-sky-300 text-sm md:text-base px-3 md:px-4 py-2 md:py-2 focus:outline focus:outline-2 focus:outline-blue-600"
         aria-label="Go to home page"
+        tabIndex={0}
       >
         🏠 Home
       </button>

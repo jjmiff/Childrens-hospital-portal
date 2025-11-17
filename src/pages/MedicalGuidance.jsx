@@ -5,6 +5,7 @@
 import { Link } from "react-router-dom";
 import { getAgeGroup, getAgeGroupLabel } from "../utils/userUtils";
 import AnimatedPage from "../components/AnimatedPage";
+import ResponsiveImage from "../components/ResponsiveImage";
 
 export default function MedicalGuidance() {
   const ageGroup = getAgeGroup();
@@ -54,7 +55,12 @@ export default function MedicalGuidance() {
         <div className="max-w-6xl mx-auto space-y-8">
           {/* Header */}
           <div className="bg-white rounded-2xl p-4 sm:p-6 md:p-8 border-2 border-gray-200 shadow-lg text-center">
-            <div className="text-4xl sm:text-5xl md:text-6xl mb-4">💊</div>
+            <ResponsiveImage
+              name="explainers-pharmacy"
+              alt="Medical guidance icon"
+              className="w-16 h-16 sm:w-20 sm:h-20 md:w-24 md:h-24 mx-auto mb-4 object-cover rounded-lg border-2 border-gray-200 shadow"
+              sizes="96px"
+            />
             <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold text-gray-800 mb-4">
               Medical Help & Guides
             </h1>

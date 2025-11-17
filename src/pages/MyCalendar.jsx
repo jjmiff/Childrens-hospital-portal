@@ -7,6 +7,7 @@ import { useEffect, useMemo, useState } from "react";
 import { apiFetch } from "../utils/api";
 import { showToast } from "../components/Toast";
 import { ListSkeleton } from "../components/LoadingSkeleton";
+import LoadingErrorEmpty from "../components/LoadingErrorEmpty";
 import { isAuthenticated } from "../utils/auth";
 import AnimatedPage from "../components/AnimatedPage";
 
@@ -41,12 +42,7 @@ export default function MyCalendar() {
           throw new Error(data.message || "Failed to load appointments");
         }
         const data = await res.json();
-        // Expect array
-        if (Array.isArray(data)) {
-          setAppointments(data);
-        } else {
-          setAppointments([]);
-        }
+        setAppointments(Array.isArray(data) ? data : []);
       } catch (err) {
         setError(err.message);
         setAppointments([]);
@@ -302,151 +298,11 @@ export default function MyCalendar() {
           <div className="bg-white rounded-2xl border-2 border-gray-200 shadow-lg p-4 sm:p-6 md:p-8">
             <div className="space-y-8">
               {/* Header */}
-              <div className="text-center">
-                <div className="text-5xl sm:text-6xl mb-4">📅</div>
-                <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold text-gray-800 mb-4">
-                  My Calendar
-                </h1>
-                <p className="text-base sm:text-lg text-gray-600">
-                  Keep track of your hospital visits and appointments
-                </p>
-              </div>
-
+              {/* ...existing code... */}
               {/* What is This? */}
-              <section className="bg-blue-50 rounded-2xl p-4 sm:p-6 border-2 border-blue-200">
-                <h2 className="text-xl sm:text-2xl font-bold text-gray-800 mb-3">
-                  📆 What's My Calendar For?
-                </h2>
-                <p className="text-gray-700 mb-3">
-                  Your calendar helps you remember when you have appointments at
-                  the hospital. You can see:
-                </p>
-                <ul className="space-y-2 text-gray-700">
-                  <li className="flex items-start gap-2">
-                    <span className="text-lg">✓</span>
-                    <span>When you need to visit the hospital</span>
-                  </li>
-                  <li className="flex items-start gap-2">
-                    <span className="text-lg">✓</span>
-                    <span>Which doctor or nurse you'll see</span>
-                  </li>
-                  <li className="flex items-start gap-2">
-                    <span className="text-lg">✓</span>
-                    <span>What room or department to go to</span>
-                  </li>
-                  <li className="flex items-start gap-2">
-                    <span className="text-lg">✓</span>
-                    <span>What time you need to be there</span>
-                  </li>
-                </ul>
-              </section>
-
+              {/* ...existing code... */}
               {/* Add Appointment */}
-              <section className="bg-mint-50 rounded-2xl p-4 sm:p-6 border-2 border-mint-200">
-                <h2 className="text-xl sm:text-2xl font-bold text-gray-800 mb-4">
-                  ➕ Add an Appointment
-                </h2>
-                <form
-                  onSubmit={handleCreate}
-                  className="grid grid-cols-1 sm:grid-cols-2 gap-4"
-                >
-                  <div className="sm:col-span-2">
-                    <label
-                      className="block text-sm font-semibold text-gray-700 mb-1"
-                      htmlFor="title"
-                    >
-                      Title
-                    </label>
-                    <input
-                      id="title"
-                      value={title}
-                      onChange={(e) => setTitle(e.target.value)}
-                      className="w-full border-2 border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-mint-400"
-                      placeholder="e.g. Check-up with Dr. Smith"
-                    />
-                  </div>
-                  <div>
-                    <label
-                      className="block text-sm font-semibold text-gray-700 mb-1"
-                      htmlFor="date"
-                    >
-                      Date
-                    </label>
-                    <input
-                      id="date"
-                      type="date"
-                      value={date}
-                      onChange={(e) => setDate(e.target.value)}
-                      className="w-full border-2 border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-mint-400"
-                    />
-                  </div>
-                  <div>
-                    <label
-                      className="block text-sm font-semibold text-gray-700 mb-1"
-                      htmlFor="time"
-                    >
-                      Time
-                    </label>
-                    <input
-                      id="time"
-                      type="time"
-                      value={time}
-                      onChange={(e) => setTime(e.target.value)}
-                      className="w-full border-2 border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-mint-400"
-                    />
-                  </div>
-                  <div>
-                    <label
-                      className="block text-sm font-semibold text-gray-700 mb-1"
-                      htmlFor="type"
-                    >
-                      Type
-                    </label>
-                    <select
-                      id="type"
-                      value={type}
-                      onChange={(e) => setType(e.target.value)}
-                      className="w-full border-2 border-gray-300 rounded-lg px-3 py-2 bg-white focus:outline-none focus:ring-2 focus:ring-mint-400"
-                    >
-                      <option value="check-up">Check-up</option>
-                      <option value="test">Test</option>
-                      <option value="therapy">Therapy</option>
-                      <option value="surgery">Surgery</option>
-                      <option value="other">Other</option>
-                    </select>
-                  </div>
-                  <div>
-                    <label
-                      className="block text-sm font-semibold text-gray-700 mb-1"
-                      htmlFor="location"
-                    >
-                      Location
-                    </label>
-                    <input
-                      id="location"
-                      value={location}
-                      onChange={(e) => setLocation(e.target.value)}
-                      className="w-full border-2 border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-mint-400"
-                      placeholder="e.g. Children's Clinic, Room 3"
-                    />
-                  </div>
-                  {createError && (
-                    <div className="sm:col-span-2 text-red-700 font-semibold">
-                      {createError}
-                    </div>
-                  )}
-                  <div className="sm:col-span-2">
-                    <button
-                      type="submit"
-                      disabled={creating}
-                      className="bg-mint-300 hover:bg-mint-400 disabled:opacity-50 text-gray-900 font-bold py-2 px-4 rounded-lg shadow"
-                    >
-                      {creating ? "Adding..." : "Add Appointment"}
-                    </button>
-                  </div>
-                </form>
-              </section>
-
+              {/* ...existing code... */}
               {/* Appointments */}
               <section>
                 <div className="flex items-center justify-between flex-wrap gap-3 mb-4">
@@ -683,76 +539,12 @@ export default function MyCalendar() {
                   )}
                 </div>
               </section>
-
               {/* Tips Box */}
-              <section className="bg-yellow-50 rounded-2xl p-4 sm:p-6 border-2 border-yellow-300">
-                <h3 className="text-lg sm:text-xl font-bold text-yellow-900 mb-3 flex items-center gap-2">
-                  <span>💡</span>
-                  <span>Helpful Tips</span>
-                </h3>
-                <ul className="space-y-2 text-gray-700 text-sm sm:text-base">
-                  <li className="flex items-start gap-2">
-                    <span className="text-yellow-600">•</span>
-                    <span>
-                      <strong>Arrive a bit early</strong> so you're not rushed
-                    </span>
-                  </li>
-                  <li className="flex items-start gap-2">
-                    <span className="text-yellow-600">•</span>
-                    <span>
-                      <strong>Bring a book or game</strong> to play while
-                      waiting
-                    </span>
-                  </li>
-                  <li className="flex items-start gap-2">
-                    <span className="text-yellow-600">•</span>
-                    <span>
-                      <strong>Write down questions</strong> you want to ask the
-                      doctor
-                    </span>
-                  </li>
-                  <li className="flex items-start gap-2">
-                    <span className="text-yellow-600">•</span>
-                    <span>
-                      <strong>Ask a grown-up</strong> if you're worried about
-                      anything
-                    </span>
-                  </li>
-                </ul>
-              </section>
-
+              {/* ...existing code... */}
               {/* Coming Soon Features */}
-              <section className="bg-green-50 rounded-2xl p-4 sm:p-6 border-2 border-green-200">
-                <h3 className="text-lg sm:text-xl font-bold text-green-900 mb-3">
-                  🌟 Coming Soon!
-                </h3>
-                <p className="text-gray-700 mb-3">
-                  We're working on exciting new features for your calendar:
-                </p>
-                <ul className="space-y-2 text-gray-700 text-sm sm:text-base">
-                  <li>📱 Reminders sent to your phone or email</li>
-                  <li>✅ Check off appointments when you've been</li>
-                  <li>📝 Add notes about how you felt during visits</li>
-                  <li>🎁 Earn badges for attending appointments</li>
-                  <li>👨‍👩‍👧 Share your calendar with family members</li>
-                </ul>
-              </section>
-
+              {/* ...existing code... */}
               {/* Navigation */}
-              <div className="flex flex-wrap justify-center gap-4 pt-4">
-                <Link
-                  to="/profile"
-                  className="bg-sky-200 hover:bg-sky-300 text-gray-800 font-bold py-3 px-6 rounded-xl transition-colors shadow-md"
-                >
-                  ← Back to Profile
-                </Link>
-                <Link
-                  to="/"
-                  className="bg-mint-200 hover:bg-mint-300 text-gray-800 font-bold py-3 px-6 rounded-xl transition-colors shadow-md"
-                >
-                  Home
-                </Link>
-              </div>
+              {/* ...existing code... */}
             </div>
           </div>
         </div>

@@ -10,6 +10,7 @@ import {
 import { lazy, Suspense, useEffect } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import Navigation from "./components/Navigation";
+import MedicalStaffDashboard from "./pages/MedicalStaffDashboard";
 import Footer from "./components/Footer";
 import Home from "./pages/Home";
 import Games from "./pages/Games";
@@ -201,6 +202,23 @@ function RoutedContent() {
             element={
               <ProtectedRoute>
                 <AdminDashboard />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/staff"
+            element={
+              <ProtectedRoute>
+                <MedicalStaffDashboard />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/staff/patient/:userId"
+            element={
+              <ProtectedRoute>
+                {/** Staff view of patient records */}
+                {require("./pages/StaffPatientRecords.jsx").default()}
               </ProtectedRoute>
             }
           />

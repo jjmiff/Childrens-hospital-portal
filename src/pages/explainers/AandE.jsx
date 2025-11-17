@@ -5,6 +5,7 @@ import { Link } from "react-router-dom";
 import AnimatedPage from "../../components/AnimatedPage";
 import ContentSection from "../../components/ContentSection";
 import { useEffect } from "react";
+import ResponsiveImage from "../../components/ResponsiveImage";
 
 export default function AandE() {
   useEffect(() => {
@@ -14,8 +15,19 @@ export default function AandE() {
   return (
     <AnimatedPage>
       <ContentSection>
+        <ResponsiveImage
+          name="aande-hero"
+          alt="Accident & Emergency department illustration"
+          className="w-full h-64 object-cover rounded-xl border-2 border-gray-200 shadow mb-8 max-w-4xl mx-auto"
+          sizes="(max-width: 640px) 100vw, 880px"
+        />
         <div className="text-center mb-8">
-          <div className="text-6xl sm:text-7xl mb-4">🚑</div>
+          <ResponsiveImage
+            name="aande-hero"
+            alt="A&E icon"
+            className="w-16 h-16 sm:w-20 sm:h-20 md:w-24 md:h-24 mx-auto mb-4 object-cover rounded-lg border-2 border-gray-200 shadow"
+            sizes="96px"
+          />
           <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold text-gray-800 mb-4">
             A&E Department
           </h1>

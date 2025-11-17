@@ -1,0 +1,623 @@
+{
+  "a11y-hero": {
+    "name": "a11y-hero",
+    "width": 1536,
+    "height": 1024,
+    "variants": [
+      {
+        "width": 320,
+        "avif": "/images/a11y-hero-320.avif",
+        "webp": "/images/a11y-hero-320.webp"
+      },
+      {
+        "width": 480,
+        "avif": "/images/a11y-hero-480.avif",
+        "webp": "/images/a11y-hero-480.webp"
+      },
+      {
+        "width": 640,
+        "avif": "/images/a11y-hero-640.avif",
+        "webp": "/images/a11y-hero-640.webp"
+      },
+      {
+        "width": 768,
+        "avif": "/images/a11y-hero-768.avif",
+        "webp": "/images/a11y-hero-768.webp"
+      },
+      {
+        "width": 960,
+        "avif": "/images/a11y-hero-960.avif",
+        "webp": "/images/a11y-hero-960.webp"
+      },
+      {
+        "width": 1200,
+        "avif": "/images/a11y-hero-1200.avif",
+        "webp": "/images/a11y-hero-1200.webp"
+      },
+      {
+        "width": 1536,
+        "avif": "/images/a11y-hero-1536.avif",
+        "webp": "/images/a11y-hero-1536.webp"
+      }
+    ],
+    "fallback": "/images/a11y-hero-1536.jpg"
+  },
+  "aande-hero": {
+    "name": "aande-hero",
+    "width": 1536,
+    "height": 1024,
+    "variants": [
+      {
+        "width": 320,
+        "avif": "/images/aande-hero-320.avif",
+        "webp": "/images/aande-hero-320.webp"
+      },
+      {
+        "width": 480,
+        "avif": "/images/aande-hero-480.avif",
+        "webp": "/images/aande-hero-480.webp"
+      },
+      {
+        "width": 640,
+        "avif": "/images/aande-hero-640.avif",
+        "webp": "/images/aande-hero-640.webp"
+      },
+      {
+        "width": 768,
+        "avif": "/images/aande-hero-768.avif",
+        "webp": "/images/aande-hero-768.webp"
+      },
+      {
+        "width": 960,
+        "avif": "/images/aande-hero-960.avif",
+        "webp": "/images/aande-hero-960.webp"
+      },
+      {
+        "width": 1200,
+        "avif": "/images/aande-hero-1200.avif",
+        "webp": "/images/aande-hero-1200.webp"
+      },
+      {
+        "width": 1536,
+        "avif": "/images/aande-hero-1536.avif",
+        "webp": "/images/aande-hero-1536.webp"
+      }
+    ],
+    "fallback": "/images/aande-hero-1536.jpg"
+  },
+  "auth-hero": {
+    "name": "auth-hero",
+    "width": 1536,
+    "height": 1024,
+    "variants": [
+      {
+        "width": 320,
+        "avif": "/images/auth-hero-320.avif",
+        "webp": "/images/auth-hero-320.webp"
+      },
+      {
+        "width": 480,
+        "avif": "/images/auth-hero-480.avif",
+        "webp": "/images/auth-hero-480.webp"
+      },
+      {
+        "width": 640,
+        "avif": "/images/auth-hero-640.avif",
+        "webp": "/images/auth-hero-640.webp"
+      },
+      {
+        "width": 768,
+        "avif": "/images/auth-hero-768.avif",
+        "webp": "/images/auth-hero-768.webp"
+      },
+      {
+        "width": 960,
+        "avif": "/images/auth-hero-960.avif",
+        "webp": "/images/auth-hero-960.webp"
+      },
+      {
+        "width": 1200,
+        "avif": "/images/auth-hero-1200.avif",
+        "webp": "/images/auth-hero-1200.webp"
+      },
+      {
+        "width": 1536,
+        "avif": "/images/auth-hero-1536.avif",
+        "webp": "/images/auth-hero-1536.webp"
+      }
+    ],
+    "fallback": "/images/auth-hero-1536.jpg"
+  },
+  "explainers-aande": {
+    "name": "explainers-aande",
+    "width": 1024,
+    "height": 1024,
+    "variants": [
+      {
+        "width": 320,
+        "avif": "/images/explainers-aande-320.avif",
+        "webp": "/images/explainers-aande-320.webp"
+      },
+      {
+        "width": 480,
+        "avif": "/images/explainers-aande-480.avif",
+        "webp": "/images/explainers-aande-480.webp"
+      },
+      {
+        "width": 640,
+        "avif": "/images/explainers-aande-640.avif",
+        "webp": "/images/explainers-aande-640.webp"
+      },
+      {
+        "width": 768,
+        "avif": "/images/explainers-aande-768.avif",
+        "webp": "/images/explainers-aande-768.webp"
+      },
+      {
+        "width": 960,
+        "avif": "/images/explainers-aande-960.avif",
+        "webp": "/images/explainers-aande-960.webp"
+      }
+    ],
+    "fallback": "/images/explainers-aande-1024.jpg"
+  },
+  "explainers-pharmacy": {
+    "name": "explainers-pharmacy",
+    "width": 1024,
+    "height": 1024,
+    "variants": [
+      {
+        "width": 320,
+        "avif": "/images/explainers-pharmacy-320.avif",
+        "webp": "/images/explainers-pharmacy-320.webp"
+      },
+      {
+        "width": 480,
+        "avif": "/images/explainers-pharmacy-480.avif",
+        "webp": "/images/explainers-pharmacy-480.webp"
+      },
+      {
+        "width": 640,
+        "avif": "/images/explainers-pharmacy-640.avif",
+        "webp": "/images/explainers-pharmacy-640.webp"
+      },
+      {
+        "width": 768,
+        "avif": "/images/explainers-pharmacy-768.avif",
+        "webp": "/images/explainers-pharmacy-768.webp"
+      },
+      {
+        "width": 960,
+        "avif": "/images/explainers-pharmacy-960.avif",
+        "webp": "/images/explainers-pharmacy-960.webp"
+      }
+    ],
+    "fallback": "/images/explainers-pharmacy-1024.jpg"
+  },
+  "explainers-surgery": {
+    "name": "explainers-surgery",
+    "width": 1024,
+    "height": 1024,
+    "variants": [
+      {
+        "width": 320,
+        "avif": "/images/explainers-surgery-320.avif",
+        "webp": "/images/explainers-surgery-320.webp"
+      },
+      {
+        "width": 480,
+        "avif": "/images/explainers-surgery-480.avif",
+        "webp": "/images/explainers-surgery-480.webp"
+      },
+      {
+        "width": 640,
+        "avif": "/images/explainers-surgery-640.avif",
+        "webp": "/images/explainers-surgery-640.webp"
+      },
+      {
+        "width": 768,
+        "avif": "/images/explainers-surgery-768.avif",
+        "webp": "/images/explainers-surgery-768.webp"
+      },
+      {
+        "width": 960,
+        "avif": "/images/explainers-surgery-960.avif",
+        "webp": "/images/explainers-surgery-960.webp"
+      }
+    ],
+    "fallback": "/images/explainers-surgery-1024.jpg"
+  },
+  "explainers-ward": {
+    "name": "explainers-ward",
+    "width": 1536,
+    "height": 1024,
+    "variants": [
+      {
+        "width": 320,
+        "avif": "/images/explainers-ward-320.avif",
+        "webp": "/images/explainers-ward-320.webp"
+      },
+      {
+        "width": 480,
+        "avif": "/images/explainers-ward-480.avif",
+        "webp": "/images/explainers-ward-480.webp"
+      },
+      {
+        "width": 640,
+        "avif": "/images/explainers-ward-640.avif",
+        "webp": "/images/explainers-ward-640.webp"
+      },
+      {
+        "width": 768,
+        "avif": "/images/explainers-ward-768.avif",
+        "webp": "/images/explainers-ward-768.webp"
+      },
+      {
+        "width": 960,
+        "avif": "/images/explainers-ward-960.avif",
+        "webp": "/images/explainers-ward-960.webp"
+      },
+      {
+        "width": 1200,
+        "avif": "/images/explainers-ward-1200.avif",
+        "webp": "/images/explainers-ward-1200.webp"
+      },
+      {
+        "width": 1536,
+        "avif": "/images/explainers-ward-1536.avif",
+        "webp": "/images/explainers-ward-1536.webp"
+      }
+    ],
+    "fallback": "/images/explainers-ward-1536.jpg"
+  },
+  "explainers-xray": {
+    "name": "explainers-xray",
+    "width": 1024,
+    "height": 1024,
+    "variants": [
+      {
+        "width": 320,
+        "avif": "/images/explainers-xray-320.avif",
+        "webp": "/images/explainers-xray-320.webp"
+      },
+      {
+        "width": 480,
+        "avif": "/images/explainers-xray-480.avif",
+        "webp": "/images/explainers-xray-480.webp"
+      },
+      {
+        "width": 640,
+        "avif": "/images/explainers-xray-640.avif",
+        "webp": "/images/explainers-xray-640.webp"
+      },
+      {
+        "width": 768,
+        "avif": "/images/explainers-xray-768.avif",
+        "webp": "/images/explainers-xray-768.webp"
+      },
+      {
+        "width": 960,
+        "avif": "/images/explainers-xray-960.avif",
+        "webp": "/images/explainers-xray-960.webp"
+      }
+    ],
+    "fallback": "/images/explainers-xray-1024.jpg"
+  },
+  "home-hero": {
+    "name": "home-hero",
+    "width": 1536,
+    "height": 1024,
+    "variants": [
+      {
+        "width": 320,
+        "avif": "/images/home-hero-320.avif",
+        "webp": "/images/home-hero-320.webp"
+      },
+      {
+        "width": 480,
+        "avif": "/images/home-hero-480.avif",
+        "webp": "/images/home-hero-480.webp"
+      },
+      {
+        "width": 640,
+        "avif": "/images/home-hero-640.avif",
+        "webp": "/images/home-hero-640.webp"
+      },
+      {
+        "width": 768,
+        "avif": "/images/home-hero-768.avif",
+        "webp": "/images/home-hero-768.webp"
+      },
+      {
+        "width": 960,
+        "avif": "/images/home-hero-960.avif",
+        "webp": "/images/home-hero-960.webp"
+      },
+      {
+        "width": 1200,
+        "avif": "/images/home-hero-1200.avif",
+        "webp": "/images/home-hero-1200.webp"
+      },
+      {
+        "width": 1536,
+        "avif": "/images/home-hero-1536.avif",
+        "webp": "/images/home-hero-1536.webp"
+      }
+    ],
+    "fallback": "/images/home-hero-1536.jpg"
+  },
+  "math-tile": {
+    "name": "math-tile",
+    "width": 1024,
+    "height": 1024,
+    "variants": [
+      {
+        "width": 320,
+        "avif": "/images/math-tile-320.avif",
+        "webp": "/images/math-tile-320.webp"
+      },
+      {
+        "width": 480,
+        "avif": "/images/math-tile-480.avif",
+        "webp": "/images/math-tile-480.webp"
+      },
+      {
+        "width": 640,
+        "avif": "/images/math-tile-640.avif",
+        "webp": "/images/math-tile-640.webp"
+      },
+      {
+        "width": 768,
+        "avif": "/images/math-tile-768.avif",
+        "webp": "/images/math-tile-768.webp"
+      },
+      {
+        "width": 960,
+        "avif": "/images/math-tile-960.avif",
+        "webp": "/images/math-tile-960.webp"
+      }
+    ],
+    "fallback": "/images/math-tile-1024.jpg"
+  },
+  "memory-tile": {
+    "name": "memory-tile",
+    "width": 692,
+    "height": 692,
+    "variants": [
+      {
+        "width": 320,
+        "avif": "/images/memory-tile-320.avif",
+        "webp": "/images/memory-tile-320.webp"
+      },
+      {
+        "width": 480,
+        "avif": "/images/memory-tile-480.avif",
+        "webp": "/images/memory-tile-480.webp"
+      },
+      {
+        "width": 640,
+        "avif": "/images/memory-tile-640.avif",
+        "webp": "/images/memory-tile-640.webp"
+      }
+    ],
+    "fallback": "/images/memory-tile-692.jpg"
+  },
+  "mri-tile": {
+    "name": "mri-tile",
+    "width": 1024,
+    "height": 1024,
+    "variants": [
+      {
+        "width": 320,
+        "avif": "/images/mri-tile-320.avif",
+        "webp": "/images/mri-tile-320.webp"
+      },
+      {
+        "width": 480,
+        "avif": "/images/mri-tile-480.avif",
+        "webp": "/images/mri-tile-480.webp"
+      },
+      {
+        "width": 640,
+        "avif": "/images/mri-tile-640.avif",
+        "webp": "/images/mri-tile-640.webp"
+      },
+      {
+        "width": 768,
+        "avif": "/images/mri-tile-768.avif",
+        "webp": "/images/mri-tile-768.webp"
+      },
+      {
+        "width": 960,
+        "avif": "/images/mri-tile-960.avif",
+        "webp": "/images/mri-tile-960.webp"
+      }
+    ],
+    "fallback": "/images/mri-tile-1024.jpg"
+  },
+  "pattern-tile": {
+    "name": "pattern-tile",
+    "width": 1024,
+    "height": 1024,
+    "variants": [
+      {
+        "width": 320,
+        "avif": "/images/pattern-tile-320.avif",
+        "webp": "/images/pattern-tile-320.webp"
+      },
+      {
+        "width": 480,
+        "avif": "/images/pattern-tile-480.avif",
+        "webp": "/images/pattern-tile-480.webp"
+      },
+      {
+        "width": 640,
+        "avif": "/images/pattern-tile-640.avif",
+        "webp": "/images/pattern-tile-640.webp"
+      },
+      {
+        "width": 768,
+        "avif": "/images/pattern-tile-768.avif",
+        "webp": "/images/pattern-tile-768.webp"
+      },
+      {
+        "width": 960,
+        "avif": "/images/pattern-tile-960.avif",
+        "webp": "/images/pattern-tile-960.webp"
+      }
+    ],
+    "fallback": "/images/pattern-tile-1024.jpg"
+  },
+  "profile-banner": {
+    "name": "profile-banner",
+    "width": 1536,
+    "height": 1024,
+    "variants": [
+      {
+        "width": 320,
+        "avif": "/images/profile-banner-320.avif",
+        "webp": "/images/profile-banner-320.webp"
+      },
+      {
+        "width": 480,
+        "avif": "/images/profile-banner-480.avif",
+        "webp": "/images/profile-banner-480.webp"
+      },
+      {
+        "width": 640,
+        "avif": "/images/profile-banner-640.avif",
+        "webp": "/images/profile-banner-640.webp"
+      },
+      {
+        "width": 768,
+        "avif": "/images/profile-banner-768.avif",
+        "webp": "/images/profile-banner-768.webp"
+      },
+      {
+        "width": 960,
+        "avif": "/images/profile-banner-960.avif",
+        "webp": "/images/profile-banner-960.webp"
+      },
+      {
+        "width": 1200,
+        "avif": "/images/profile-banner-1200.avif",
+        "webp": "/images/profile-banner-1200.webp"
+      },
+      {
+        "width": 1536,
+        "avif": "/images/profile-banner-1536.avif",
+        "webp": "/images/profile-banner-1536.webp"
+      }
+    ],
+    "fallback": "/images/profile-banner-1536.jpg"
+  },
+  "quiz-tile": {
+    "name": "quiz-tile",
+    "width": 1024,
+    "height": 1024,
+    "variants": [
+      {
+        "width": 320,
+        "avif": "/images/quiz-tile-320.avif",
+        "webp": "/images/quiz-tile-320.webp"
+      },
+      {
+        "width": 480,
+        "avif": "/images/quiz-tile-480.avif",
+        "webp": "/images/quiz-tile-480.webp"
+      },
+      {
+        "width": 640,
+        "avif": "/images/quiz-tile-640.avif",
+        "webp": "/images/quiz-tile-640.webp"
+      },
+      {
+        "width": 768,
+        "avif": "/images/quiz-tile-768.avif",
+        "webp": "/images/quiz-tile-768.webp"
+      },
+      {
+        "width": 960,
+        "avif": "/images/quiz-tile-960.avif",
+        "webp": "/images/quiz-tile-960.webp"
+      }
+    ],
+    "fallback": "/images/quiz-tile-1024.jpg"
+  },
+  "results-celebrate": {
+    "name": "results-celebrate",
+    "width": 1536,
+    "height": 1024,
+    "variants": [
+      {
+        "width": 320,
+        "avif": "/images/results-celebrate-320.avif",
+        "webp": "/images/results-celebrate-320.webp"
+      },
+      {
+        "width": 480,
+        "avif": "/images/results-celebrate-480.avif",
+        "webp": "/images/results-celebrate-480.webp"
+      },
+      {
+        "width": 640,
+        "avif": "/images/results-celebrate-640.avif",
+        "webp": "/images/results-celebrate-640.webp"
+      },
+      {
+        "width": 768,
+        "avif": "/images/results-celebrate-768.avif",
+        "webp": "/images/results-celebrate-768.webp"
+      },
+      {
+        "width": 960,
+        "avif": "/images/results-celebrate-960.avif",
+        "webp": "/images/results-celebrate-960.webp"
+      },
+      {
+        "width": 1200,
+        "avif": "/images/results-celebrate-1200.avif",
+        "webp": "/images/results-celebrate-1200.webp"
+      },
+      {
+        "width": 1536,
+        "avif": "/images/results-celebrate-1536.avif",
+        "webp": "/images/results-celebrate-1536.webp"
+      }
+    ],
+    "fallback": "/images/results-celebrate-1536.jpg"
+  },
+  "word-tile": {
+    "name": "word-tile",
+    "width": 1024,
+    "height": 1024,
+    "variants": [
+      {
+        "width": 320,
+        "avif": "/images/word-tile-320.avif",
+        "webp": "/images/word-tile-320.webp"
+      },
+      {
+        "width": 480,
+        "avif": "/images/word-tile-480.avif",
+        "webp": "/images/word-tile-480.webp"
+      },
+      {
+        "width": 640,
+        "avif": "/images/word-tile-640.avif",
+        "webp": "/images/word-tile-640.webp"
+      },
+      {
+        "width": 768,
+        "avif": "/images/word-tile-768.avif",
+        "webp": "/images/word-tile-768.webp"
+      },
+      {
+        "width": 960,
+        "avif": "/images/word-tile-960.avif",
+        "webp": "/images/word-tile-960.webp"
+      }
+    ],
+    "fallback": "/images/word-tile-1024.jpg"
+  }
+}

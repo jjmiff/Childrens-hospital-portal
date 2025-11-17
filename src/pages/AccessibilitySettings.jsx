@@ -5,6 +5,7 @@ import { Link } from "react-router-dom";
 import { useAccessibility } from "../contexts/AccessibilityContext";
 import AnimatedPage from "../components/AnimatedPage";
 import { useEffect } from "react";
+import ResponsiveImage from "../components/ResponsiveImage";
 
 export default function AccessibilitySettings() {
   const {
@@ -24,11 +25,22 @@ export default function AccessibilitySettings() {
     <AnimatedPage>
       <div className="bg-gradient-to-br from-purple-100 via-pink-50 to-blue-100 py-8 sm:py-12 px-4 rounded-3xl">
         <div className="max-w-3xl mx-auto">
+          <ResponsiveImage
+            name="a11y-hero"
+            alt="Accessibility settings illustration"
+            className="w-full h-40 object-cover rounded-xl border-2 border-gray-200 shadow mb-6 max-w-xl mx-auto"
+            sizes="(max-width: 640px) 100vw, 560px"
+          />
           <div className="bg-white rounded-2xl border-2 border-gray-200 shadow-lg p-4 sm:p-6 md:p-8">
             <div className="space-y-8">
               {/* Header */}
               <div className="text-center">
-                <div className="text-5xl sm:text-6xl mb-4">♿</div>
+                <ResponsiveImage
+                  name="a11y-hero"
+                  alt="Accessibility icon"
+                  className="w-16 h-16 sm:w-20 sm:h-20 md:w-24 md:h-24 mx-auto mb-4 object-cover rounded-lg border-2 border-gray-200 shadow"
+                  sizes="96px"
+                />
                 <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold text-gray-800 mb-4">
                   Accessibility Settings
                 </h1>
